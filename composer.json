@@ -1,0 +1,27 @@
+{
+	"name": "liftkit/database",
+	"description": "Database library for LiftKit",
+	"license": "LGP-2.1",
+	"authors": [
+		{
+			"name": "Ryan Williams",
+			"email": "rwilliams@stream9.net",
+			"homepage": "https://www.stream9.net",
+			"role": "Developer"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"LiftKit\\Database\\": "src/"
+		}
+	},
+	"require": {
+		"liftkit/dependency-injection": "dev-master"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/liftkit/dependency-injection"
+		}
+	]
+}
