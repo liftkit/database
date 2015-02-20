@@ -11,7 +11,7 @@
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Query\Query as DatabaseQuery;
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
-	use LiftKit\DatabaseTables\Base as DatabaseTable;
+	use LiftKit\Database\Table\Table as DatabaseTable;
 	use LiftKit\Database\Result\Result as DatabaseResult;
 	use LiftKit\Database\Exception\Database as DatabaseException;
 	use LiftKit\Database\Cache\Cache as DatabaseCache;
@@ -80,20 +80,16 @@
 				$sql = $sql->getRaw();
 			}
 
-			$sql = $this->stripPlaceholders($sql, $data);
-			$sql = trim($sql);
+			$statement = $this->database->prepare($sql);
+			$result = $statement->execute($data);
 
-			$this->lastQuery = $sql;
-			$result          = $this->database->query($sql);
-
+			$this->lastQuery = $statement->queryString;
 			$this->cachedQueries[$sql]++;
 
 			if (! $result) {
-				throw new DatabaseException($sql.': ' . $this->database->errorCode() . ' "' . $this->database->errorInfo() . '"');
-			}
-
-			if ($result !== true) {
-				return $this->createResult($result, $sql, $entity);
+				throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $this->database->errorInfo() . '"');
+			}else {
+				return $this->createResult($statement, $entity);
 			}
 		}
 
@@ -162,32 +158,12 @@
 		 */
 		public function createResult (PDOStatement $result, $entity = null)
 		{
-			return new DatabaseResult($result, $this->loader, $entity);
+			if ($result->columnCount()) {
+				return new DatabaseResult($result, $this->loader, $entity);
+			} else {
+				return true;
+			}
 		}
-
-
-		/**
-		 * quote function.
-		 *
-		 * @access public
-		 *
-		 * @param string $string
-		 *
-		 * @return string
-		 */
-		abstract public function quote ($string);
-
-
-		/**
-		 * escape function.
-		 *
-		 * @access public
-		 *
-		 * @param string $string
-		 *
-		 * @return string
-		 */
-		abstract public function escape ($string);
 
 
 		/**
@@ -199,12 +175,30 @@
 
 
 		/**
+		 * quote function.
+		 *
+		 * @access public
+		 *
+		 * @param string $string
+		 *
+		 * @return string
+		 */
+		public function quote ($string)
+		{
+			return $this->database->quote($string);
+		}
+
+
+		/**
 		 * lastId function.
 		 *
 		 * @access public
 		 * @return int
 		 */
-		abstract public function insertId ();
+		public function insertId ()
+		{
+			return $this->database->lastInsertId();
+		}
 
 
 		/**
@@ -212,44 +206,11 @@
 		 *
 		 * @access public
 		 *
-		 * @param string $table_name
+		 * @param string $tableName
 		 *
 		 * @return string
 		 */
-		abstract public function primaryKey ($table_name);
-
-
-		/**
-		 * stripPlaceholders function.
-		 *
-		 * @access protected
-		 *
-		 * @param string $sql
-		 * @param array  $data
-		 *
-		 * @return string
-		 */
-		public function stripPlaceholders ($sql, $data)
-		{
-			$split = explode($this->placeholder, $sql);
-			$out   = '';
-
-			for ($i = 0; $i < count($split) - 1; $i++) {
-				$out .= $split[$i];
-
-				if (! is_null($data[$i])) {
-					$out .= $this->quote($data[$i]);
-				} else if ($i > count($data) - 1) {
-					$out .= $this->placeholder;
-				} else {
-					$out .= "NULL";
-				}
-			}
-
-			$out .= $split[count($split) - 1];
-
-			return $out;
-		}
+		abstract public function primaryKey ($tableName);
 
 
 		/**

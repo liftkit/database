@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<database name="test">
+	<table_data name="children">
+	<row>
+		<field name="child_id">1</field>
+		<field name="parent_id">1</field>
+		<field name="child_name">child1</field>
+	</row>
+	<row>
+		<field name="child_id">2</field>
+		<field name="parent_id">2</field>
+		<field name="child_name">child1</field>
+	</row>
+	<row>
+		<field name="child_id">3</field>
+		<field name="parent_id">3</field>
+		<field name="child_name">child1</field>
+	</row>
+	<row>
+		<field name="child_id">4</field>
+		<field name="parent_id">2</field>
+		<field name="child_name">child2</field>
+	</row>
+	<row>
+		<field name="child_id">5</field>
+		<field name="parent_id">3</field>
+		<field name="child_name">child2</field>
+	</row>
+	<row>
+		<field name="child_id">6</field>
+		<field name="parent_id">3</field>
+		<field name="child_name">child3</field>
+	</row>
+	</table_data>
+	<table_data name="parents">
+	<row>
+		<field name="parent_id">1</field>
+		<field name="parent_name">parent1</field>
+	</row>
+	<row>
+		<field name="parent_id">2</field>
+		<field name="parent_name">parent2</field>
+	</row>
+	<row>
+		<field name="parent_id">3</field>
+		<field name="parent_name">parent3</field>
+	</row>
+	</table_data>
+</database>
+</mysqldump>

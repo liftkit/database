@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit>
+    <php>
+        <var name="DB_DSN" value="mysql:host=localhost;dbname=test" />
+        <var name="DB_HOST" value="localhost" />
+        <var name="DB_USER" value="root" />
+        <var name="DB_PASSWORD" value="root" />
+        <var name="DB_SCHEMA" value="test" />
+    </php>
+</phpunit>

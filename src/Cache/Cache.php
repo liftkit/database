@@ -10,7 +10,7 @@
 	namespace LiftKit\Database\Cache;
 
 	use LiftKit\Database\Query\Query as DatabaseQuery;
-	use LiftKit\Interfaces\DatabaseResult;
+	use LiftKit\Database\Result\Result as DatabaseResult;
 
 
 	class Cache

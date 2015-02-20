@@ -18,6 +18,10 @@
 	"require": {
 		"liftkit/dependency-injection": "dev-master"
 	},
+	"require-dev": {
+		"phpunit/phpunit": "4.5.*",
+		"phpunit/dbunit": "1.2.*"
+	},
 	"repositories": [
 		{
 			"type": "git",
