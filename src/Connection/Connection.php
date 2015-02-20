@@ -70,6 +70,7 @@
 		 *
 		 * @param string $sql
 		 * @param array  $data (default: array())
+		 * @param string $entity (default: null)
 		 *
 		 * @return DatabaseResult
 		 */
