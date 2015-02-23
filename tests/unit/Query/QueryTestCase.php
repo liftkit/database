@@ -7,6 +7,7 @@
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Query\Condition\Condition;
+	use LiftKit\Database\Query\Query;
 
 
 	abstract class QueryTestCase extends SimpleTestCase
@@ -35,6 +36,12 @@
 		protected $condition;
 
 
+		/**
+		 * @var Query
+		 */
+		protected $query;
+
+
 
 		public function afterConnection ()
 		{
@@ -50,6 +57,7 @@
 				$this->schema
 			);
 
+			$this->query = $this->connection->createQuery();
 			$this->condition = $this->connection->createCondition();
 		}
 

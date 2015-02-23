@@ -32,6 +32,9 @@
 		const QUERY_TYPE_UPDATE = 'UPDATE';
 		const QUERY_TYPE_DELETE = 'DELETE';
 
+		const QUERY_ORDER_ASC = 'ASC';
+		const QUERY_ORDER_DESC = 'DESC';
+
 		protected $database;
 
 		protected $type;
@@ -156,25 +159,31 @@
 		public function __call ($method, $arguments)
 		{
 			if (isset($this->whereConditionMethodMap[$method])) {
+				$condition = $this->database->createCondition();
+
 				call_user_func_array(
 					array(
-						$this->whereCondition,
+						$condition,
 						$this->whereConditionMethodMap[$method]
 					),
 					$arguments
 				);
 
-				return $this;
+				return $this->where($condition);
+
 			} else if (isset($this->havingConditionMethodMap[$method])) {
+				$condition = $this->database->createCondition();
+
 				call_user_func_array(
 					array(
-						$this->havingCondition,
+						$condition,
 						$this->havingConditionMethodMap[$method]
 					),
 					$arguments
 				);
 
-				return $this;
+				return $this->having($condition);
+
 			} else {
 				throw new QueryBuilderException('Method ' . $method . ' not found.');
 			}
@@ -228,12 +237,12 @@
 			$this->joins  = array_merge($this->joins, $query->joins);
 			$this->unions = array_merge($this->unions, $query->unions);
 
-			if (!$query->whereCondition->isEmpty()) {
-				$this->whereCondition($query->whereCondition);
+			if (! $query->whereCondition->isEmpty()) {
+				$this->where($query->whereCondition);
 			}
 
-			if (!$query->havingCondition->isEmpty()) {
-				$this->havingCondition($query->havingCondition);
+			if (! $query->havingCondition->isEmpty()) {
+				$this->having($query->havingCondition);
 			}
 
 			$this->groupBys = array_merge($this->groupBys, $query->groupBys);
@@ -260,7 +269,7 @@
 
 			if ($this->type == self::QUERY_TYPE_SELECT) {
 				$queryLines[] = "SELECT " . $this->processFields();
-				$queryLines[] = "FROM " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
 				$queryLines[] = $this->processGroupBy();
@@ -269,20 +278,20 @@
 				$queryLines[] = $this->processLimit();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT) {
-				$queryLines[] = "INSERT INTO " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "INSERT INTO " . $this->filterIdentifier($this->table);
 				$queryLines[] = "SET " . $this->processData();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT_IGNORE) {
-				$queryLines[] = "INSERT IGNORE INTO ".$this->database->quoteIdentifier($this->table);
+				$queryLines[] = "INSERT IGNORE INTO ".$this->filterIdentifier($this->table);
 				$queryLines[] = "SET " . $this->processData();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT_UPDATE) {
-				$queryLines[] = "INSERT INTO " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "INSERT INTO " . $this->filterIdentifier($this->table);
 				$queryLines[] = "SET " . $this->processData();
 				$queryLines[] = "ON DUPLICATE KEY UPDATE " . $this->processData();
 
 			} else if ($this->type == self::QUERY_TYPE_UPDATE) {
-				$queryLines[] = "UPDATE " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "UPDATE " . $this->filterIdentifier($this->table);
 				$queryLines[] = "SET " . $this->processData();
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
@@ -293,7 +302,7 @@
 
 			} else if ($this->type == self::QUERY_TYPE_DELETE) {
 				$queryLines[] = "DELETE " . $this->processFields();
-				$queryLines[] = "FROM " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
 				$queryLines[] = $this->processGroupBy();
@@ -370,6 +379,8 @@
 
 				if ($field instanceof self) {
 					$field = '(' . $field->getRaw() . ')';
+				} else if (! $field instanceof Raw) {
+					$field = $this->filterIdentifier($field);
 				}
 
 				if (isset($alias)) {
@@ -387,19 +398,25 @@
 		}
 
 
-		public function addField ($field, $alias = null)
+		public function prependFields ($fields)
 		{
-			if ($field instanceof self) {
-				$field = '(' . $field->getRaw() . ')';
-			}
+			return $this->fields($fields, true);
+		}
 
+
+		public function addField ($field, $alias = null, $prepend = false)
+		{
 			if (!is_null($alias)) {
-				$field .= ' AS ' . $this->filterIdentifier($alias);
+				$field = array($field, $alias);
 			}
 
-			$this->fields(array($field));
+			return $this->fields(array($field), $prepend);
+		}
 
-			return $this;
+
+		public function prependField ($field, $alias = null)
+		{
+			return $this->addField($field, $alias, true);
 		}
 
 
@@ -509,7 +526,7 @@
 				'table'     => $table,
 				'type'      => 'LEFT JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
+				'condition' => $this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
 			);
 
 			return $this;
@@ -548,7 +565,7 @@
 				'table'     => $table,
 				'type'      => 'RIGHT JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
+				'condition' => $this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
 			);
 
 			return $this;
@@ -587,46 +604,7 @@
 				'table'     => $table,
 				'type'      => 'INNER JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
-			);
-
-			return $this;
-		}
-
-
-		public function outerJoin ($table, $condition)
-		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'OUTER JOIN',
-				'relation'  => 'ON',
-				'condition' => $condition,
-			);
-
-			return $this;
-		}
-
-
-		public function outerJoinUsing ($table, $field)
-		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'OUTER JOIN',
-				'relation'  => 'USING',
-				'condition' => $this->filterIdentifier($field),
-			);
-
-			return $this;
-		}
-
-
-		public function outerJoinEqual ($table, $left, $right)
-		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'OUTER JOIN',
-				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
+				'condition' => $this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
 			);
 
 			return $this;
@@ -780,12 +758,14 @@
 		}
 
 
+		// PROTECTED METHODS
+
+
 		protected function processFields ()
 		{
 			if (empty($this->fields)) {
-				return '';
+				return $this->database->quoteIdentifier('*');
 			} else {
-				$this->fields = array_map($this->fields, array($this, 'filterIdentifier'));
 				return implode(', ', $this->fields);
 			}
 		}
@@ -799,7 +779,7 @@
 				$fields = array();
 
 				foreach ($this->data as $key => $value) {
-					$fields[] = $key . " = " . $this->database->quote($value);
+					$fields[] = $this->database->quoteIdentifier($key) . " = " . $this->database->quote($value);
 				}
 
 				return implode(', ', $fields);
@@ -865,7 +845,7 @@
 					$orderBys[] = $orderBy['field'] . ' ' . $orderBy['direction'];
 				}
 
-				return $sql.implode(',', $orderBys);
+				return $sql.implode(', ', $orderBys);
 			}
 		}
 
@@ -873,7 +853,7 @@
 		protected function processLimit ()
 		{
 			if (strval(intval($this->limit)) === strval($this->limit)) {
-				return "LIMIT ".intval($this->start).", ".intval($this->limit);
+				return "LIMIT " . intval($this->start) . ", " . intval($this->limit);
 			} else {
 				return '';
 			}
