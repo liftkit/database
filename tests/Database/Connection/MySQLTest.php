@@ -1,16 +1,16 @@
 <?php
 
 
-	require_once(__DIR__ . '/../bootstrap.php');
-
+	namespace LiftKit\Tests\Database\Connection;
 
 	use LiftKit\Database\Connection\MySQL as Connection;
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
 
+	use LiftKit\Tests\Database\TestCase;
 
 
-	class Connection_MySQL_Test extends BaseTestCase
+	class MySQLTest extends TestCase
 	{
 		/**
 		 * @var Connection

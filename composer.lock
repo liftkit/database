@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b3b07d210ed85609dbb133effdd370ba",
+    "hash": "a16fe79457e753512d150f04bc1a900f",
     "packages": [
         {
             "name": "liftkit/dependency-injection",

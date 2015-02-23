@@ -1,8 +1,13 @@
 <?php
 
 
+	namespace LiftKit\Tests\Database;
 
-	abstract class BaseTestCase extends PHPUnit_Extensions_Database_TestCase
+	use PHPUnit_Extensions_Database_TestCase;
+	use PDO;
+
+
+	abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	{
 		// only instantiate pdo once for test clean-up/fixture load
 		static protected $pdo = null;
@@ -42,7 +47,7 @@
 
 		public function getDataSet ()
 		{
-			return $this->createMySQLXMLDataSet(__DIR__ . '/datasets/simple.xml');
+			return $this->createMySQLXMLDataSet(__DIR__ . '/../datasets/simple.xml');
 		}
 
 
