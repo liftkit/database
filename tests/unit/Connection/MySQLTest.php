@@ -1,7 +1,7 @@
 <?php
 
 
-	namespace LiftKit\Tests\Database\Connection;
+	namespace LiftKit\Tests\Unit\Database\Connection;
 
 	use LiftKit\Database\Connection\MySQL as Connection;
 	use LiftKit\Database\Cache\Cache;

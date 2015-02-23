@@ -1,7 +1,7 @@
 <?php
 
 
-	namespace LiftKit\Tests\Database;
+	namespace LiftKit\Tests\Unit\Database;
 
 
 	abstract class SimpleTestCase extends TestCase

@@ -14,11 +14,12 @@
 		"psr-4": {
 			"LiftKit\\Database\\": "src/",
 			"LiftKit\\Tests\\Helpers\\Database\\": "tests/helpers",
-			"LiftKit\\Tests\\Database\\": "tests/unit"
+			"LiftKit\\Tests\\Unit\\Database\\": "tests/unit"
 		}
 	},
 	"require": {
-		"liftkit/dependency-injection": "dev-master"
+		"liftkit/dependency-injection": "dev-master",
+		"liftkit/collection": "dev-master"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "4.5.*",
@@ -28,6 +29,10 @@
 		{
 			"type": "git",
 			"url": "https://github.com/liftkit/dependency-injection"
+		},
+		{
+			"type": "git",
+			"url": "https://github.com/liftkit/collection"
 		}
 	]
 }

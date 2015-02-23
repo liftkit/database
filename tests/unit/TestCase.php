@@ -1,7 +1,7 @@
 <?php
 
 
-	namespace LiftKit\Tests\Database;
+	namespace LiftKit\Tests\Unit\Database;
 
 	use PHPUnit_Extensions_Database_TestCase;
 	use PDO;

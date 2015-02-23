@@ -4,8 +4,40 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ff6b0a62753626501dcd0b56597ab780",
+    "hash": "828dbff36a9a1097751af727578e349f",
     "packages": [
+        {
+            "name": "liftkit/collection",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/liftkit/collection",
+                "reference": "6494051909c07419541da73dec8c2ac6ace6b984"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LiftKit\\": "src/",
+                    "LiftKit\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "LGP-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Ryan Williams",
+                    "email": "rwilliams@stream9.net",
+                    "homepage": "https://www.stream9.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "LiftKit base class for collections",
+            "time": "2015-02-22 01:54:41"
+        },
         {
             "name": "liftkit/dependency-injection",
             "version": "dev-master",
@@ -1049,7 +1081,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "liftkit/dependency-injection": 20
+        "liftkit/dependency-injection": 20,
+        "liftkit/collection": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

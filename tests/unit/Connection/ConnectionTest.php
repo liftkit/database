@@ -1,7 +1,7 @@
 <?php
 
 
-	namespace LiftKit\Tests\Database\Connection;
+	namespace LiftKit\Tests\Unit\Database\Connection;
 
 	use LiftKit\Database\Connection\Connection as Connection;
 	use LiftKit\Database\Cache\Cache;
@@ -11,7 +11,7 @@
 	use LiftKit\Database\Query\Query;
 	use LiftKit\Database\Table\Table;
 
-	use LiftKit\Tests\Database\SimpleTestCase;
+	use LiftKit\Tests\Unit\Database\SimpleTestCase;
 	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
 
 	use PHPUnit_Extensions_Database_DataSet_DataSetFilter;
