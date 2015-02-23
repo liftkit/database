@@ -15,6 +15,7 @@
 	use LiftKit\Database\Result\Result as DatabaseResult;
 	use LiftKit\Database\Exception\Database as DatabaseException;
 	use LiftKit\Database\Cache\Cache as DatabaseCache;
+	use LiftKit\Database\Query\Raw\Raw;
 
 	use PDO;
 	use PDOException;
@@ -97,6 +98,7 @@
 		 * query function.
 		 *
 		 * @access public
+		 * @todo implement cache
 		 *
 		 * @param string $sql
 		 * @param array  $data (default: array())
@@ -115,7 +117,6 @@
 			$result = $statement->execute($data);
 
 			$this->lastQuery = $statement->queryString;
-			$this->cachedQueries[$sql]++;
 
 			if (! $result) {
 				throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $this->database->errorInfo() . '"');
@@ -140,6 +141,15 @@
 		public function createCondition ()
 		{
 			return new DatabaseQueryCondition($this);
+		}
+
+
+		/**
+		 * @return Raw
+		 */
+		public function createRaw ($sql)
+		{
+			return new Raw($sql);
 		}
 
 

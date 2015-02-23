@@ -3,6 +3,9 @@
 
 	namespace LiftKit\Database\Query\Identifier;
 
+	use LiftKit\Database\Query\Raw\Raw;
+	use LiftKit\Database\Query\Query;
+
 
 	class MySQL extends Identifier
 	{
@@ -12,14 +15,16 @@
 		{
 			$identifier = $this->identifierString;
 
-			if (!preg_match('#^([A-Za-z0-9\._])+$#', $identifier)) {
-				return $identifier;
+			if ($identifier instanceof Raw) {
+				return (string) $identifier;
+			} else if ($identifier instanceof Query) {
+				return '(' . $identifier->getRaw() . ')';
 			}
 
-			$split = explode('.', $identifier);
+			$split = explode('.', (string) $identifier);
 
 			foreach ($split as &$segment) {
-				$segment = '`'.$segment.'`';
+				$segment = '`' . $segment . '`';
 			}
 
 			return implode('.', $split);

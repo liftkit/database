@@ -12,9 +12,10 @@
 
 	use LiftKit\Database\Connection\Connection as Database;
 	use LiftKit\Database\Query\Query as DatabaseQuery;
-	use LiftKit\Database\Exception\QueryBuilder as QueryBuilderException;
+	use LiftKit\Database\Query\Exception\Query as QueryBuilderException;
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
-	use LiftKit\Interfaces\DatabaseResult;
+	use LiftKit\Database\Result\Result as DatabaseResult;
+	use LiftKit\Database\Query\Raw\Raw;
 
 
 	/**
@@ -146,8 +147,9 @@
 		public function __construct (Database $database)
 		{
 			$this->database        = $database;
-			$this->whereCondition  = $this->condition();
-			$this->havingCondition = $this->condition();
+			$this->whereCondition  = $this->database->createCondition();
+			$this->havingCondition = $this->database->createCondition();
+
 		}
 
 
@@ -174,7 +176,7 @@
 
 				return $this;
 			} else {
-				throw new QueryBuilderException('Method '.$method.' not found.');
+				throw new QueryBuilderException('Method ' . $method . ' not found.');
 			}
 		}
 
@@ -206,12 +208,6 @@
 			$this->entityHydrationRule = $dependencyInjectionRule;
 
 			return $this;
-		}
-
-
-		public function createCondition ()
-		{
-			return new DatabaseQueryCondition($this->database);
 		}
 
 
@@ -263,8 +259,8 @@
 			$queryLines = array();
 
 			if ($this->type == self::QUERY_TYPE_SELECT) {
-				$queryLines[] = "SELECT ".$this->processFields();
-				$queryLines[] = "FROM ".$this->database->backtickQuote($this->table);
+				$queryLines[] = "SELECT " . $this->processFields();
+				$queryLines[] = "FROM " . $this->database->quoteIdentifier($this->table);
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
 				$queryLines[] = $this->processGroupBy();
@@ -273,21 +269,21 @@
 				$queryLines[] = $this->processLimit();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT) {
-				$queryLines[] = "INSERT INTO ".$this->database->backtickQuote($this->table);
-				$queryLines[] = "SET ".$this->processData();
+				$queryLines[] = "INSERT INTO " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "SET " . $this->processData();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT_IGNORE) {
-				$queryLines[] = "INSERT IGNORE INTO ".$this->database->backtickQuote($this->table);
-				$queryLines[] = "SET ".$this->processData();
+				$queryLines[] = "INSERT IGNORE INTO ".$this->database->quoteIdentifier($this->table);
+				$queryLines[] = "SET " . $this->processData();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT_UPDATE) {
-				$queryLines[] = "INSERT INTO ".$this->database->backtickQuote($this->table);
-				$queryLines[] = "SET ".$this->processData();
-				$queryLines[] = "ON DUPLICATE KEY UPDATE ".$this->processData();
+				$queryLines[] = "INSERT INTO " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "SET " . $this->processData();
+				$queryLines[] = "ON DUPLICATE KEY UPDATE " . $this->processData();
 
 			} else if ($this->type == self::QUERY_TYPE_UPDATE) {
-				$queryLines[] = "UPDATE ".$this->database->backtickQuote($this->table);
-				$queryLines[] = "SET ".$this->processData();
+				$queryLines[] = "UPDATE " . $this->database->quoteIdentifier($this->table);
+				$queryLines[] = "SET " . $this->processData();
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
 				$queryLines[] = $this->processGroupBy();
@@ -296,8 +292,8 @@
 				$queryLines[] = $this->processLimit();
 
 			} else if ($this->type == self::QUERY_TYPE_DELETE) {
-				$queryLines[] = "DELETE ".$this->processFields();
-				$queryLines[] = "FROM ".$this->database->backtickQuote($this->table);
+				$queryLines[] = "DELETE " . $this->processFields();
+				$queryLines[] = "FROM " . $this->database->quoteIdentifier($this->table);
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
 				$queryLines[] = $this->processGroupBy();
@@ -372,12 +368,12 @@
 					$field = $field[0];
 				}
 
-				if ($field instanceof Base) {
-					$field = '('.$field->getRaw().')';
+				if ($field instanceof self) {
+					$field = '(' . $field->getRaw() . ')';
 				}
 
 				if (isset($alias)) {
-					$field .= ' AS `'.$alias.'`';
+					$field .= ' AS ' . $this->filterIdentifier($alias);
 				}
 
 				if ($prepend) {
@@ -393,12 +389,12 @@
 
 		public function addField ($field, $alias = null)
 		{
-			if ($field instanceof Base) {
-				$field = '('.$field->getRaw().')';
+			if ($field instanceof self) {
+				$field = '(' . $field->getRaw() . ')';
 			}
 
 			if (!is_null($alias)) {
-				$field .= ' AS ' . $alias;
+				$field .= ' AS ' . $this->filterIdentifier($alias);
 			}
 
 			$this->fields(array($field));
@@ -500,7 +496,7 @@
 				'table'     => $table,
 				'type'      => 'LEFT JOIN',
 				'relation'  => 'USING',
-				'condition' => $this->database->backtickQuote($field),
+				'condition' => $this->filterIdentifier($field),
 			);
 
 			return $this;
@@ -513,7 +509,7 @@
 				'table'     => $table,
 				'type'      => 'LEFT JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->database->backtickQuote($left).'='.$this->database->backtickQuote($right),
+				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
 			);
 
 			return $this;
@@ -539,7 +535,7 @@
 				'table'     => $table,
 				'type'      => 'RIGHT JOIN',
 				'relation'  => 'USING',
-				'condition' => $this->database->backtickQuote($field),
+				'condition' => $this->filterIdentifier($field),
 			);
 
 			return $this;
@@ -552,7 +548,7 @@
 				'table'     => $table,
 				'type'      => 'RIGHT JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->database->backtickQuote($left).'='.$this->database->backtickQuote($right),
+				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
 			);
 
 			return $this;
@@ -578,7 +574,7 @@
 				'table'     => $table,
 				'type'      => 'INNER JOIN',
 				'relation'  => 'USING',
-				'condition' => $this->database->backtickQuote($field),
+				'condition' => $this->filterIdentifier($field),
 			);
 
 			return $this;
@@ -591,7 +587,7 @@
 				'table'     => $table,
 				'type'      => 'INNER JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->database->backtickQuote($left).'='.$this->database->backtickQuote($right),
+				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
 			);
 
 			return $this;
@@ -617,7 +613,7 @@
 				'table'     => $table,
 				'type'      => 'OUTER JOIN',
 				'relation'  => 'USING',
-				'condition' => $this->database->backtickQuote($field),
+				'condition' => $this->filterIdentifier($field),
 			);
 
 			return $this;
@@ -630,16 +626,10 @@
 				'table'     => $table,
 				'type'      => 'OUTER JOIN',
 				'relation'  => 'ON',
-				'condition' => $this->database->backtickQuote($left).'='.$this->database->backtickQuote($right),
+				'condition' => $this->filterIdentifier($left) . '=' . $this->filterIdentifier($right),
 			);
 
 			return $this;
-		}
-
-
-		public function union ($table)
-		{
-			throw new QueryBuilderException('The union feature has not yet been implemented.');
 		}
 
 
@@ -647,7 +637,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->whereCondition->condition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->whereCondition->raw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -661,7 +651,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->whereCondition->orCondition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->whereCondition->orRaw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -675,7 +665,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->whereCondition->notCondition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->whereCondition->notRaw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -689,7 +679,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->whereCondition->orNotCondition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->whereCondition->orNotRaw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -703,7 +693,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->havingCondition->condition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->havingCondition->raw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -717,7 +707,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->havingCondition->orCondition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->havingCondition->orRaw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -731,7 +721,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->havingCondition->notCondition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->havingCondition->notRaw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -745,7 +735,7 @@
 		{
 			if ($condition instanceof DatabaseQueryCondition) {
 				$this->havingCondition->orNotCondition($condition);
-			} else if (is_string($condition)) {
+			} else if ($condition instanceof Raw || is_string($condition)) {
 				$this->havingCondition->orNotRaw($condition);
 			} else {
 				throw new QueryBuilderException(gettype($condition).' is not a valid condition type.');
@@ -790,17 +780,12 @@
 		}
 
 
-		public function condition ()
-		{
-			return new DatabaseQueryCondition($this->database);
-		}
-
-
 		protected function processFields ()
 		{
 			if (empty($this->fields)) {
 				return '';
 			} else {
+				$this->fields = array_map($this->fields, array($this, 'filterIdentifier'));
 				return implode(', ', $this->fields);
 			}
 		}
@@ -814,7 +799,7 @@
 				$fields = array();
 
 				foreach ($this->data as $key => $value) {
-					$fields[] = $key." = ".$this->database->quote($value);
+					$fields[] = $key . " = " . $this->database->quote($value);
 				}
 
 				return implode(', ', $fields);
@@ -830,7 +815,7 @@
 				$joins = array();
 
 				foreach ($this->joins as $join) {
-					$joins[] = $join['type']." ".$this->database->backtickQuote($join['table'])." ".$join['relation']." (".$join['condition'].")";
+					$joins[] = $join['type'] . " "  . $this->filterIdentifier($join['table']) . " " . $join['relation'] . " (" . $join['condition'] . ")";
 				}
 
 				return implode("\n", $joins);
@@ -841,7 +826,7 @@
 		protected function processWhere ()
 		{
 			if (!$this->whereCondition->isEmpty()) {
-				return "WHERE ".$this->whereCondition->getRaw();
+				return "WHERE " . $this->whereCondition->getRaw();
 			} else {
 				return '';
 			}
@@ -851,7 +836,7 @@
 		protected function processHaving ()
 		{
 			if (!$this->havingCondition->isEmpty()) {
-				return "HAVING ".$this->havingCondition->getRaw();
+				return "HAVING " . $this->havingCondition->getRaw();
 			} else {
 				return '';
 			}
@@ -863,7 +848,7 @@
 			if (empty($this->groupBys)) {
 				return '';
 			} else {
-				return "GROUP BY ".implode(', ', $this->groupBys);
+				return "GROUP BY " . implode(', ', $this->groupBys);
 			}
 		}
 
@@ -874,13 +859,13 @@
 				return '';
 			} else {
 				$sql       = "ORDER BY ";
-				$order_bys = array();
+				$orderBys = array();
 
-				foreach ($this->orderBys as $order_by) {
-					$order_bys[] = $order_by['field'].' '.$order_by['direction'];
+				foreach ($this->orderBys as $orderBy) {
+					$orderBys[] = $orderBy['field'] . ' ' . $orderBy['direction'];
 				}
 
-				return $sql.implode(',', $order_bys);
+				return $sql.implode(',', $orderBys);
 			}
 		}
 
@@ -898,13 +883,13 @@
 		protected function filterIdentifier ($value)
 		{
 			if ($value instanceof DatabaseQuery) {
-				return '('.$value->getRaw().')';
+				return '(' . $value->getRaw() . ')';
 
-			} else if (strval(intval($value)) === strval($value) || strpos($value, '(')) {
+			} else if (strval(intval($value)) === strval($value) || $value instanceof Raw) {
 				return $value;
 
 			} else {
-				return $this->database->backtickQuote($value);
+				return $this->database->quoteIdentifier($value);
 			}
 		}
 	}

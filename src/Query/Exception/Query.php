@@ -7,7 +7,7 @@
 	 */
 
 
-	namespace LiftKit\Database\Exception;
+	namespace LiftKit\Database\Query\Exception;
 
 	use Exception;
 
@@ -17,7 +17,7 @@
 	 *
 	 * @package LiftKit\Database\Exception
 	 */
-	class QueryBuilder extends Exception
+	class Query extends Exception
 	{
 
 

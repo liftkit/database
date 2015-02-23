@@ -12,7 +12,9 @@
 
 	use LiftKit\Database\Connection\Connection as Database;
 	use LiftKit\Database\Query\Query as DatabaseQuery;
-	use LiftKit\Database\Exception\QueryBuilder as DatabaseQueryBuilderException;
+	use LiftKit\Database\Query\Raw\Raw;
+	use LiftKit\Database\Query\Identifier\Identifier;
+	use LiftKit\Database\Query\Exception\Query as DatabaseQueryBuilderException;
 
 
 	/**
@@ -46,14 +48,14 @@
 
 		public function getRaw ()
 		{
-			if (!$this->isEmpty()) {
+			if (! $this->isEmpty()) {
 				$query = '';
 
 				foreach ($this->conditions as $condition) {
 					if ($query == '') {
 						$query .= $condition['condition'];
 					} else {
-						$query .= ' '.$condition['relation'].' '.$condition['condition'];
+						$query .= ' ' . $condition['relation'] . ' ' . $condition['condition'];
 					}
 				}
 
@@ -71,7 +73,7 @@
 			} else {
 				$this->conditions[] = array(
 					'relation'  => 'AND',
-					'condition' => $this->filterLeftValue($left)." = ".$this->filterValue($right),
+					'condition' => $this->filterLeftValue($left) . " = " . $this->filterValue($right),
 				);
 			}
 
@@ -86,7 +88,7 @@
 			} else {
 				$this->conditions[] = array(
 					'relation'  => 'OR',
-					'condition' => $this->filterLeftValue($left)." = ".$this->filterValue($right),
+					'condition' => $this->filterLeftValue($left) . " = " . $this->filterValue($right),
 				);
 
 				return $this;
@@ -101,7 +103,7 @@
 			} else {
 				$this->conditions[] = array(
 					'relation'  => 'AND',
-					'condition' => $this->filterLeftValue($left)." != ".$this->filterValue($right),
+					'condition' => $this->filterLeftValue($left) . " <> " . $this->filterValue($right),
 				);
 
 				return $this;
@@ -116,7 +118,7 @@
 			} else {
 				$this->conditions[] = array(
 					'relation'  => 'OR ',
-					'condition' => $this->filterLeftValue($left)." != ".$this->filterValue($right),
+					'condition' => $this->filterLeftValue($left) . " <> " . $this->filterValue($right),
 				);
 
 				return $this;
@@ -128,7 +130,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($left)." < ".$this->filterValue($right),
+				'condition' => $this->filterLeftValue($left) . " < " . $this->filterValue($right),
 			);
 
 			return $this;
@@ -139,7 +141,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($left)." < ".$this->filterValue($right),
+				'condition' => $this->filterLeftValue($left) . " < " . $this->filterValue($right),
 			);
 
 			return $this;
@@ -150,7 +152,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($left)." <= ".$this->filterValue($right),
+				'condition' => $this->filterLeftValue($left) . " <= " . $this->filterValue($right),
 			);
 
 			return $this;
@@ -161,7 +163,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($left)." > ".$this->filterValue($right),
+				'condition' => $this->filterLeftValue($left) . " > " . $this->filterValue($right),
 			);
 
 			return $this;
@@ -172,7 +174,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($left)." > ".$this->filterValue($right),
+				'condition' => $this->filterLeftValue($left) . " > " . $this->filterValue($right),
 			);
 
 			return $this;
@@ -183,7 +185,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($left)." >= ".$this->filterValue($right),
+				'condition' => $this->filterLeftValue($left) . " >= " . $this->filterValue($right),
 			);
 
 			return $this;
@@ -198,27 +200,28 @@
 					'condition' => "FALSE",
 				);
 			} else {
-				if( is_array($values) ){
+				if (is_array($values)) {
 					$values = array_map(
 						array(
 							$this,
 							'filterValue'
-						), $values
+						),
+						$values
 					);
 
 					$this->conditions[] = array(
 						'relation'  => 'AND',
-						'condition' => $this->filterLeftValue($value)." IN (".implode(', ', $values).")",
+						'condition' => $this->filterLeftValue($value) . " IN (" . implode(', ', $values) . ")",
 					);
 
-				} else if( $values instanceof DatabaseQuery ){
+				} else if ($values instanceof DatabaseQuery) {
 					$this->conditions[] = array(
 						'relation'  => 'AND',
-						'condition' => $this->filterLeftValue($value)." IN (".$values->getRaw().")",
+						'condition' => $this->filterLeftValue($value) . " IN (" . $values->getRaw() . ")",
 					);
 
 				} else {
-					throw new DatabaseQueryBuilderException('Invalid in condition value '.var_export($values));
+					throw new DatabaseQueryBuilderException('Invalid in condition value ' . var_export($values));
 				}
 			}
 
@@ -233,28 +236,30 @@
 					'relation'  => 'OR',
 					'condition' => "FALSE",
 				);
+
 			} else {
-				if( is_array($values) ){
+				if (is_array($values)) {
 					$values = array_map(
 						array(
 							$this,
 							'filterValue'
-						), $values
+						),
+						$values
 					);
 
 					$this->conditions[] = array(
 						'relation'  => 'OR',
-						'condition' => $this->filterLeftValue($value)." IN (".implode(', ', $values).")",
+						'condition' => $this->filterLeftValue($value) . " IN (" . implode(', ', $values) . ")",
 					);
 
-				} else if( $values instanceof DatabaseQuery ){
+				} else if ($values instanceof DatabaseQuery) {
 					$this->conditions[] = array(
 						'relation'  => 'OR',
-						'condition' => $this->filterLeftValue($value)." IN (".$values->getRaw().")",
+						'condition' => $this->filterLeftValue($value) . " IN (" . $values->getRaw() . ")",
 					);
 
 				} else {
-					throw new DatabaseQueryBuilderException('Invalid in condition value '.var_export($values));
+					throw new DatabaseQueryBuilderException('Invalid in condition value ' . var_export($values));
 				}
 			}
 
@@ -267,30 +272,32 @@
 			if (empty($values)) {
 				$this->conditions[] = array(
 					'relation'  => 'AND',
-					'condition' => "TRUE",
+					'condition' => 'TRUE',
 				);
+
 			} else {
-				if( is_array($values) ){
+				if (is_array($values)) {
 					$values = array_map(
 						array(
 							$this,
 							'filterValue'
-						), $values
+						),
+						$values
 					);
 
 					$this->conditions[] = array(
 						'relation'  => 'AND',
-						'condition' => $this->filterLeftValue($value)." NOT IN (".implode(', ', $values).")",
+						'condition' => $this->filterLeftValue($value) . " NOT IN (" . implode(', ', $values) . ")",
 					);
 
-				} else if( $values instanceof DatabaseQuery ){
+				} else if ($values instanceof DatabaseQuery) {
 					$this->conditions[] = array(
 						'relation'  => 'AND',
-						'condition' => $this->filterLeftValue($value)." NOT IN (".$values->getRaw().")",
+						'condition' => $this->filterLeftValue($value) . " NOT IN (" . $values->getRaw() . ")",
 					);
 
 				} else {
-					throw new DatabaseQueryBuilderException('Invalid in condition value '.var_export($values));
+					throw new DatabaseQueryBuilderException('Invalid in condition value ' . var_export($values));
 				}
 			}
 
@@ -306,27 +313,26 @@
 					'condition' => "TRUE",
 				);
 			} else {
-				if( is_array($values) ){
+				if (is_array($values)) {
 					$values = array_map(
 						array(
 							$this,
 							'filterValue'
-						), $values
+						),
+						$values
 					);
 
 					$this->conditions[] = array(
 						'relation'  => 'OR',
-						'condition' => $this->filterLeftValue($value)." NOT IN (".implode(', ', $values).")",
+						'condition' => $this->filterLeftValue($value) . " NOT IN (" . implode(', ', $values) . ")",
 					);
-
-				} else if( $values instanceof DatabaseQuery ){
+				} else if ($values instanceof DatabaseQuery) {
 					$this->conditions[] = array(
 						'relation'  => 'OR',
-						'condition' => $this->filterLeftValue($value)." NOT IN (".$values->getRaw().")",
+						'condition' => $this->filterLeftValue($value) . " NOT IN (" . $values->getRaw() . ")",
 					);
-
 				} else {
-					throw new DatabaseQueryBuilder('Invalid in condition value '.var_export($values));
+					throw new DatabaseQueryBuilderException('Invalid in condition value ' . var_export($values));
 				}
 			}
 
@@ -340,7 +346,7 @@
 
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($value).' IS '.$boolean,
+				'condition' => $this->filterLeftValue($value) . ' IS ' . $boolean,
 			);
 
 			return $this;
@@ -353,7 +359,7 @@
 
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($value).' IS '.$boolean,
+				'condition' => $this->filterLeftValue($value) . ' IS ' . $boolean,
 			);
 
 			return $this;
@@ -366,7 +372,7 @@
 
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($value).' IS NOT '.$boolean,
+				'condition' => $this->filterLeftValue($value) . ' IS NOT ' . $boolean,
 			);
 
 			return $this;
@@ -379,7 +385,7 @@
 
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($value).' IS NOT '.$boolean,
+				'condition' => $this->filterLeftValue($value) . ' IS NOT ' . $boolean,
 			);
 
 			return $this;
@@ -390,7 +396,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($value)." LIKE ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " LIKE " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -401,7 +407,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($value)." LIKE ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " LIKE " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -412,7 +418,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($value)." NOT LIKE ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " NOT LIKE " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -423,7 +429,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($value)." NOT LIKE ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " NOT LIKE " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -434,7 +440,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($value)." REGEXP ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " REGEXP " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -445,7 +451,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($value)." REGEXP ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " REGEXP " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -456,7 +462,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => $this->filterLeftValue($value)." NOT REGEXP ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " NOT REGEXP " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -467,7 +473,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => $this->filterLeftValue($value)." NOT REGEXP ".$this->filterString($pattern),
+				'condition' => $this->filterLeftValue($value) . " NOT REGEXP " . $this->filterString($pattern),
 			);
 
 			return $this;
@@ -510,7 +516,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
-				'condition' => '('.$condition.')',
+				'condition' => '(' . $condition . ')',
 			);
 
 			return $this;
@@ -521,7 +527,7 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR',
-				'condition' => '('.$condition.')',
+				'condition' => '(' . $condition . ')',
 			);
 
 			return $this;
@@ -531,8 +537,8 @@
 		public function notRaw ($condition)
 		{
 			$this->conditions[] = array(
-				'relation'  => 'NOT',
-				'condition' => '('.$condition.')',
+				'relation'  => 'AND NOT',
+				'condition' => '(' . $condition . ')',
 			);
 
 			return $this;
@@ -543,14 +549,14 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'OR NOT',
-				'condition' => '('.$condition.')',
+				'condition' => '(' . $condition . ')',
 			);
 
 			return $this;
 		}
 
 
-		public function search( $fields, $termString )
+		public function search ($fields, $termString)
 		{
 			$condition = new self($this->database);
 
@@ -563,8 +569,8 @@
 
 					foreach ($fields as $field) {
 						$innerCondition->orRegexp(
-							$this->database->backtickQuote($field),
-							'[[:<:]]'.$term
+							$field,
+							'[[:<:]]' . $term
 						);
 					}
 
@@ -585,11 +591,14 @@
 		protected function filterValue ($value)
 		{
 			if ($value instanceof DatabaseQuery) {
-				return '('.$value->getRaw().')';
-			} else if (preg_match('#^`(.*)`$#', $value)) {
-				return $value;
-			} else if (strval(intval($value)) === strval($value)) {
-				return $value;
+				return '(' . $value->getRaw() . ')';
+
+			} else if ($value instanceof Identifier) {
+					return (string) $value;
+
+			} else if ($value instanceof Raw) {
+					return (string) $value;
+
 			} else {
 				return $this->database->quote($value);
 			}
@@ -599,13 +608,13 @@
 		protected function filterLeftValue ($value)
 		{
 			if ($value instanceof DatabaseQuery) {
-				return '('.$value->getRaw().')';
-			} else if (strval(intval($value)) === strval($value)) {
-				return $value;
-			} else if (!preg_match('#^`(.*)`$#', $value)) {
-				return $this->database->backtickQuote($value);
+				return '(' . $value->getRaw() . ')';
+
+			} else if ($value instanceof Raw) {
+				return (string) $value;
+
 			} else {
-				return $value;
+				return $this->database->quoteIdentifier($value);
 			}
 		}
 
@@ -614,12 +623,15 @@
 		{
 			if ($boolean === true) {
 				$boolean = 'TRUE';
+
 			} else if ($boolean === false) {
 				$boolean = 'FALSE';
+
 			} else if ($boolean === null) {
 				$boolean = 'NULL';
+
 			} else {
-				throw new DatabaseQueryBuilderException('Invalid IS token '.var_export($boolean, true));
+				throw new DatabaseQueryBuilderException('Invalid IS token ' . var_export($boolean, true));
 			}
 
 			return $boolean;
