@@ -57,11 +57,11 @@
 		public function primaryKey ($tableName)
 		{
 			if (!isset($this->primaryKeys[$tableName])) {
-				$sql = "SHOW INDEX FROM `".$tableName."` WHERE Key_name = 'PRIMARY'";
+				$sql = "SHOW INDEX FROM " . $this->quoteIdentifier($tableName) . " WHERE Key_name = 'PRIMARY'";
 
 				$keyResult                      = $this->query($sql);
 				$key                            = $keyResult->fetchRow();
-				$this->primaryKeys[$tableName] = $key['Column_name'];
+				$this->primaryKeys[$tableName]  = $key['Column_name'];
 			}
 
 			return $this->primaryKeys[$tableName];

@@ -6,28 +6,11 @@
 	use LiftKit\Database\Connection\MySQL as Connection;
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
+	use LiftKit\Database\Query\Identifier\Identifier;
 
-	use LiftKit\Tests\Database\TestCase;
 
-
-	class MySQLTest extends TestCase
+	class MySQLTest extends ConnectionTest
 	{
-		/**
-		 * @var Connection
-		 */
-		protected $connection;
-
-		/**
-		 * @var Cache
-		 */
-		protected $cache;
-
-
-		/**
-		 * @var Container
-		 */
-		protected $container;
-
 
 		public function afterConnection ()
 		{
@@ -45,8 +28,15 @@
 		}
 
 
-		public function testConnectsToDatabase ()
+		public function testQuoteIdentifier ()
 		{
-			$this->assertTrue($this->connection instanceof Connection);
+			$this->assertTrue($this->connection->quoteIdentifier('test') instanceof Identifier);
+			$this->assertEquals($this->connection->quoteIdentifier('test'), '`test`');
+		}
+
+
+		public function testPrimaryKey ()
+		{
+			$this->assertEquals($this->connection->primaryKey('parents'), 'parent_id');
 		}
 	}

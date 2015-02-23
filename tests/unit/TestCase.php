@@ -45,11 +45,5 @@
 		}
 
 
-		public function getDataSet ()
-		{
-			return $this->createMySQLXMLDataSet(__DIR__ . '/../datasets/simple.xml');
-		}
-
-
 		abstract public function afterConnection ();
 	}

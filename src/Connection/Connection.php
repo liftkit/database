@@ -28,12 +28,42 @@
 		protected $lastQuery;
 		protected $loader;
 		protected $cachedQueries = array();
-		protected $placeholder = '?';
 
 		/**
 		 * @var DatabaseCache
 		 */
 		protected $cache;
+
+
+		/**
+		 * @param string $identifier
+		 *
+		 * @return string
+		 */
+		abstract public function quoteIdentifier ($identifier);
+
+
+		/**
+		 * primaryKey function.
+		 *
+		 * @access public
+		 *
+		 * @param string $tableName
+		 *
+		 * @return string
+		 */
+		abstract public function primaryKey ($tableName);
+
+
+		/**
+		 * @param string $host
+		 * @param string $user
+		 * @param string $password
+		 * @param string $schema
+		 *
+		 * @return mixed
+		 */
+		abstract protected function buildConnectionString ($host, $user, $password, $schema);
 
 
 		/**
@@ -96,33 +126,6 @@
 
 
 		/**
-		 * @param mixed $query
-		 *
-		 * @return DatabaseQuery
-		 * @throws DatabaseException
-		 */
-		public function toQuery ($query)
-		{
-			if (is_object($query)) {
-				$query = clone $query;
-			}
-
-			if ($query instanceof DatabaseQuery) {
-				return $query;
-
-			} else if ($query instanceof DatabaseQueryCondition) {
-				return $this->createQuery()->where($query);
-
-			} else if (is_null($query)) {
-				return $this->createQuery();
-
-			} else {
-				throw new DatabaseException('Invalid query/condition type.');
-			}
-		}
-
-
-		/**
 		 * @return DatabaseQuery
 		 */
 		public function createQuery ()
@@ -152,27 +155,39 @@
 
 
 		/**
-		 * @param PDOStatement $result
-		 * @param null|string  $entity
-		 *
-		 * @return DatabaseResult
+		 * @return DatabaseCache
 		 */
-		public function createResult (PDOStatement $result, $entity = null)
+		public function getCache ()
 		{
-			if ($result->columnCount()) {
-				return new DatabaseResult($result, $this->loader, $entity);
-			} else {
-				return true;
-			}
+			return $this->cache;
 		}
 
 
 		/**
-		 * @param string $identifier
+		 * @param mixed $query
 		 *
-		 * @return string
+		 * @return DatabaseQuery
+		 * @throws DatabaseException
 		 */
-		abstract public function quoteIdentifier ($identifier);
+		public function toQuery ($query)
+		{
+			if (is_object($query)) {
+				$query = clone $query;
+			}
+
+			if ($query instanceof DatabaseQuery) {
+				return $query;
+
+			} else if ($query instanceof DatabaseQueryCondition) {
+				return $this->createQuery()->where($query);
+
+			} else if (is_null($query)) {
+				return $this->createQuery();
+
+			} else {
+				throw new DatabaseException('Invalid query/condition type.');
+			}
+		}
 
 
 		/**
@@ -203,30 +218,6 @@
 
 
 		/**
-		 * primaryKey function.
-		 *
-		 * @access public
-		 *
-		 * @param string $tableName
-		 *
-		 * @return string
-		 */
-		abstract public function primaryKey ($tableName);
-
-
-		/**
-		 * lastQuery function.
-		 *
-		 * @access public
-		 * @return string
-		 */
-		public function lastQuery ()
-		{
-			return $this->lastQuery;
-		}
-
-
-		/**
 		 * getFields function.
 		 *
 		 * @access public
@@ -237,16 +228,9 @@
 		 */
 		public function getFields ($table)
 		{
-			$sql = "SHOW COLUMNS FROM `".$table."`";
+			$sql = "SHOW COLUMNS FROM " . $this->quoteIdentifier($table);
 
-			$fields = $this->query($sql);
-			$returnFields = array();
-
-			foreach ($fields as $field) {
-				$returnFields[] = $field['Field'];
-			}
-
-			return $returnFields;
+			return $this->query($sql);
 		}
 
 
@@ -278,23 +262,19 @@
 
 
 		/**
-		 * @return DatabaseCache
-		 */
-		public function getCache ()
-		{
-			return $this->cache;
-		}
-
-
-		/**
-		 * @param string $host
-		 * @param string $user
-		 * @param string $password
-		 * @param string $schema
+		 * @param PDOStatement $result
+		 * @param null|string  $entity
 		 *
-		 * @return mixed
+		 * @return DatabaseResult
 		 */
-		abstract protected function buildConnectionString ($host, $user, $password, $schema);
+		protected function createResult (PDOStatement $result, $entity = null)
+		{
+			if ($result->columnCount()) {
+				return new DatabaseResult($result, $this->loader, $entity);
+			} else {
+				return true;
+			}
+		}
 	}
 
 

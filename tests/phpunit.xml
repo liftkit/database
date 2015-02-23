@@ -9,7 +9,7 @@
     </php>
     <testsuites>
         <testsuite name="database">
-            <directory>.</directory>
+            <directory>unit/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

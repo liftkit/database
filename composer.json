@@ -13,7 +13,8 @@
 	"autoload": {
 		"psr-4": {
 			"LiftKit\\Database\\": "src/",
-			"LiftKit\\Tests\\": "tests/"
+			"LiftKit\\Tests\\Helpers\\Database\\": "tests/helpers",
+			"LiftKit\\Tests\\Database\\": "tests/unit"
 		}
 	},
 	"require": {
