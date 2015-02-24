@@ -2,7 +2,7 @@
 
 	namespace LiftKit\Tests\Unit\Database\Query;
 
-	use LiftKit\Tests\Unit\Database\SimpleTestCase;
+	use LiftKit\Tests\Unit\Database\DefaultTestCase;
 	use LiftKit\Database\Connection\MySQL as Connection;
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
@@ -10,7 +10,7 @@
 	use LiftKit\Database\Query\Query;
 
 
-	abstract class QueryTestCase extends SimpleTestCase
+	abstract class QueryTestCase extends DefaultTestCase
 	{
 		/**
 		 * @var Container

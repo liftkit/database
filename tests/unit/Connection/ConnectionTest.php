@@ -10,13 +10,13 @@
 	use LiftKit\Database\Query\Condition\Condition;
 	use LiftKit\Database\Query\Query;
 
-	use LiftKit\Tests\Unit\Database\SimpleTestCase;
+	use LiftKit\Tests\Unit\Database\DefaultTestCase;
 	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
 
 	use PHPUnit_Extensions_Database_DataSet_DataSetFilter;
 
 
-	abstract class ConnectionTest extends SimpleTestCase
+	abstract class ConnectionTest extends DefaultTestCase
 	{
 		/**
 		 * @var Connection

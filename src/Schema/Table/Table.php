@@ -15,7 +15,7 @@
 	use LiftKit\Database\Entity\Entity;
 
 	use LiftKit\Database\Exception\Database as DatabaseException;
-	use LiftKit\Database\Exception\QueryBuilder as QueryBuilderException;
+	use LiftKit\Database\Query\Exception\Query as QueryBuilderException;
 
 
 	/**
@@ -55,10 +55,10 @@
 		 * @param Database    $database
 		 * @param string|null $table
 		 */
-		public function __construct (Database $database, $table = null)
+		public function __construct (Database $database, $table)
 		{
 			$this->database = $database;
-			$this->setTable($table);
+			$this->table = $table;
 		}
 
 
@@ -72,19 +72,6 @@
 
 
 		/**
-		 * @param string $table
-		 *
-		 * @return self
-		 */
-		public function setTable ($table)
-		{
-			$this->table = $table;
-
-			return $this;
-		}
-
-
-		/**
 		 * @param string $entityRule
 		 *
 		 * @return $this
@@ -94,6 +81,15 @@
 			$this->entityRule = $entityRule;
 
 			return $this;
+		}
+
+
+		/**
+		 * @return string
+		 */
+		public function getPrimaryKey ()
+		{
+			return $this->database->primaryKey($this->table);
 		}
 
 
@@ -170,15 +166,6 @@
 			);
 
 			return $this;
-		}
-
-
-		/**
-		 * @return string
-		 */
-		public function getPrimaryKey ()
-		{
-			return $this->database->primaryKey($this->table);
 		}
 
 
@@ -342,17 +329,6 @@
 
 
 		/**
-		 * @param $relation_identifier
-		 *
-		 * @return array
-		 */
-		public function getRelation ($relation_identifier)
-		{
-			return $this->relations[$relation_identifier];
-		}
-
-
-		/**
 		 * @param array|object|Entity $row
 		 * @param bool $filterColumns
 		 *
@@ -407,25 +383,25 @@
 			foreach ($this->getSingleParentRelations() as $relation) {
 				$key =
 					strstr($relation['key'], '.')
-						? $this->database->backtickQuote($relation['key'])
-						: $this->database->backtickQuote($this->table.'.'.$relation['key']);
+						? $this->database->quoteIdentifier($relation['key'])
+						: $this->database->quoteIdentifier($this->table.'.'.$relation['key']);
 
-				$foreign_key =
+				$foreignKey =
 					strstr($relation['foreign_key'], '.')
-						? $this->database->backtickQuote($relation['foreign_key'])
-						: $this->database->backtickQuote($relation['table'].'.'.$relation['foreign_key']);
+						? $this->database->quoteIdentifier($relation['foreign_key'])
+						: $this->database->quoteIdentifier($relation['table'].'.'.$relation['foreign_key']);
 
 				$query->leftJoin(
 					$relation['table'],
-					$query->createCondition()
-						->equal($key, $foreign_key)
+					$this->database->createCondition()
+						->equal($key, $foreignKey)
 				)
-					->fields(array($this->database->backtickQuote($relation['table']).'.*'));
+					->fields(array($this->database->quoteIdentifier($relation['table']).'.*'));
 			}
 
 			$query->select()
 				->from($this->table)
-				->fields(array($this->database->backtickQuote($this->table).'.*'));
+				->fields(array($this->database->quoteIdentifier($this->table).'.*'));
 
 			if (!is_null($inputQuery)) {
 				$query->composeWith($inputQuery);
@@ -456,7 +432,7 @@
 					->fields(array('*'))
 					->from($relation['table'])
 					->where(
-						$query->createCondition()
+						$this->database->createCondition()
 							->equal($relation['foreign_key'], $id)
 					);
 			} else if ($relation['type'] == self::MANY_TO_MANY) {
@@ -552,26 +528,26 @@
 			foreach ($this->getSingleParentRelations() as $relation) {
 				$key =
 					strstr($relation['key'], '.')
-						? $this->database->backtickQuote($relation['key'])
-						: $this->database->backtickQuote($this->table.'.'.$relation['key']);
+						? $this->database->quoteIdentifier($relation['key'])
+						: $this->database->quoteIdentifier($this->table.'.'.$relation['key']);
 
 				$foreign_key =
 					strstr($relation['foreign_key'], '.')
-						? $this->database->backtickQuote($relation['foreign_key'])
-						: $this->database->backtickQuote($relation['table'].'.'.$relation['foreign_key']);
+						? $this->database->quoteIdentifier($relation['foreign_key'])
+						: $this->database->quoteIdentifier($relation['table'].'.'.$relation['foreign_key']);
 
 				$query->leftJoin(
 					$relation['table'],
 					$query->createCondition()
 						->equal($key, $foreign_key)
 				)
-					->fields(array($this->database->backtickQuote($relation['table']).'.*'));
+					->fields(array($this->database->quoteIdentifier($relation['table']).'.*'));
 			}
 
 			$result = $query
 				->select()
 				->from($this->table)
-				->fields(array($this->database->backtickQuote($this->table).'.*'))
+				->fields(array($this->database->quoteIdentifier($this->table).'.*'))
 				->where(
 					$query->createCondition()
 						->equal($this->table.'.'.$this->getPrimaryKey(), $id)
@@ -628,7 +604,7 @@
 						$relation['foreign_key']
 					)
 					->where(
-						$query->createCondition()
+						$this->database->createCondition()
 							->equal($relation['key'], $id)
 					);
 			} else {
@@ -640,19 +616,6 @@
 			}
 
 			return $query->execute();
-		}
-
-
-		/**
-		 * @param string $relationIdentifier
-		 * @param int    $id
-		 * @param null   $query
-		 *
-		 * @throws DatabaseException
-		 */
-		public function getSiblings ($relationIdentifier, $id, $query = null)
-		{
-			throw new DatabaseException(__METHOD__.' has not yet been implemented.');
 		}
 
 
@@ -943,19 +906,6 @@
 		/**
 		 * @param string $relationIdentifier
 		 * @param int $id
-		 * @param int $parentId
-		 *
-		 * @throws DatabaseException
-		 */
-		public function assignParent ($relationIdentifier, $id, $parentId)
-		{
-			throw new DatabaseException(__METHOD__.' has not yet been implemented.');
-		}
-
-
-		/**
-		 * @param string $relationIdentifier
-		 * @param int $id
 		 * @param int $childId
 		 *
 		 * @throws DatabaseException
@@ -990,6 +940,17 @@
 			} else {
 				throw new DatabaseException('Invalid relation type `'.$relation['type'].'`');
 			}
+		}
+
+
+		/**
+		 * @param $relationIdentifier
+		 *
+		 * @return array
+		 */
+		protected function getRelation ($relationIdentifier)
+		{
+			return $this->relations[$relationIdentifier];
 		}
 
 
