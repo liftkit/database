@@ -795,4 +795,37 @@
 			$this->assertEquals($this->query->getTable(), 'children');
 			$this->assertEquals(count($this->query->getJoins()), 1);
 		}
+
+
+		public function testComposeWith ()
+		{
+			$query = $this->query->select('child_id')
+				->from('children')
+				->whereEqual('child_name', 'child1')
+				->havingEqual('parent_id', 1)
+				->orderBy('child_id');
+
+			$innerQuery = $this->connection->createQuery()
+				->addField('child_name')
+				->leftJoinUsing('parents', 'parent_id')
+				->whereEqual('child_id', 2)
+				->havingEqual('child_id', 2)
+				->orderBy('parents.parent_id')
+				->limit(1, 0);
+
+			$query->composeWith($innerQuery);
+
+			$this->assertEquals(
+				$this->normalizeSql($query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					LEFT JOIN `parents` USING (`parent_id`)
+					WHERE (`child_name` = 'child1') AND ((`child_id` = '2'))
+					HAVING (`parent_id` = '1') AND ((`child_id` = '2'))
+					ORDER BY `child_id` ASC, `parents`.`parent_id` ASC
+					LIMIT 0, 1
+				")
+			);
+		}
 	}
