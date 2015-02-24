@@ -9,7 +9,6 @@
 
 	use LiftKit\Database\Query\Condition\Condition;
 	use LiftKit\Database\Query\Query;
-	use LiftKit\Database\Table\Table;
 
 	use LiftKit\Tests\Unit\Database\SimpleTestCase;
 	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
@@ -99,12 +98,6 @@
 		public function testCreateCondition ()
 		{
 			$this->assertTrue($this->connection->createCondition() instanceof Condition);
-		}
-
-
-		public function testCreateTable ()
-		{
-			$this->assertTrue($this->connection->createTable('parents') instanceof Table);
 		}
 
 

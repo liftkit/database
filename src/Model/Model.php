@@ -12,9 +12,9 @@
 
 
 	use LiftKit\Database\Connection\Connection;
+	use LiftKit\Database\Schema\Schema;
 	use LiftKit\Database\Query\Query;
 	use LiftKit\Database\Query\Condition\Condition;
-	use LiftKit\Database\Table\Table;
 
 
 	/**
@@ -30,13 +30,19 @@
 		 */
 		protected $database;
 
+		/**
+		 * @var Schema
+		 */
+		protected $schema;
+
 
 		/**
 		 * @param Connection $database
 		 */
-		public function __construct (Connection $database)
+		public function __construct (Connection $database, Schema $schema = null)
 		{
 			$this->database = $database;
+			$this->schema = $schema;
 		}
 
 
@@ -64,15 +70,6 @@
 		protected function createCondition ()
 		{
 			return $this->database->createCondition();
-		}
-
-
-		/**
-		 * @return Table
-		 */
-		protected function createTable ($table)
-		{
-			return $this->database->createTable($table);
 		}
 
 

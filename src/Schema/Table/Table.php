@@ -6,7 +6,7 @@
 	 *
 	 */
 
-	namespace LiftKit\Database\Table;
+	namespace LiftKit\Database\Schema\Table;
 
 	use LiftKit\Database\Connection\Connection as Database;
 	use LiftKit\Database\Result\Result as DatabaseResult;
