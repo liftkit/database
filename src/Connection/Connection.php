@@ -11,7 +11,6 @@
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Query\Query as DatabaseQuery;
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
-	use LiftKit\Database\Table\Table as DatabaseTable;
 	use LiftKit\Database\Result\Result as DatabaseResult;
 	use LiftKit\Database\Exception\Database as DatabaseException;
 	use LiftKit\Database\Cache\Cache as DatabaseCache;
@@ -150,17 +149,6 @@
 		public function createRaw ($sql)
 		{
 			return new Raw($sql);
-		}
-
-
-		/**
-		 * @param string $table
-		 *
-		 * @return DatabaseTable
-		 */
-		public function createTable ($table)
-		{
-			return new DatabaseTable($this, $table);
 		}
 
 
