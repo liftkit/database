@@ -732,7 +732,7 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					DELETE `children`.`*`
+					DELETE `children`.*
 					FROM `children`
 					WHERE (`child_id` = '2')
 				")
@@ -749,7 +749,7 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `*`
+					SELECT *
 					FROM `children`
 					WHERE (`child_id` = '1')
 				")
@@ -766,7 +766,7 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `*`
+					SELECT *
 					FROM `children`
 					HAVING (`child_id` = '1')
 				")

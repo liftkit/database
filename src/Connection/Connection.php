@@ -118,7 +118,7 @@
 			$this->lastQuery = $statement->queryString;
 
 			if (! $result) {
-				throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $this->database->errorInfo() . '"');
+				throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $statement->queryString . '"');
 			}else {
 				return $this->createResult($statement, $entity);
 			}

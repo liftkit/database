@@ -43,4 +43,12 @@
 
 			$this->assertEquals($identifier, 'test');
 		}
+
+
+		public function testStart ()
+		{
+			$identifier = new Identifier('*');
+
+			$this->assertEquals($identifier, '*');
+		}
 	}

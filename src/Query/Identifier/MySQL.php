@@ -24,7 +24,9 @@
 			$split = explode('.', (string) $identifier);
 
 			foreach ($split as &$segment) {
-				$segment = '`' . $segment . '`';
+				if ($segment != '*') {
+					$segment = '`' . $segment . '`';
+				}
 			}
 
 			return implode('.', $split);
