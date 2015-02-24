@@ -5,14 +5,21 @@
 
 	use PHPUnit_Extensions_Database_TestCase;
 	use PDO;
+	use PHPUnit_Extensions_Database_DB_IDatabaseConnection;
 
 
 	abstract class TestCase extends PHPUnit_Extensions_Database_TestCase
 	{
 		// only instantiate pdo once for test clean-up/fixture load
+		/**
+		 * @var PDO
+		 */
 		static protected $pdo = null;
 
 		// only instantiate PHPUnit_Extensions_Database_DB_IDatabaseConnection once per test
+		/**
+		 * @var PHPUnit_Extensions_Database_DB_IDatabaseConnection
+		 */
 		protected $conn = null;
 
 

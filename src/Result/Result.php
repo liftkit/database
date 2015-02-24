@@ -65,7 +65,7 @@
 		{
 			$data = array();
 
-			while ($row = $this->pdoStatement->fetchAll()) {
+			while ($row = $this->pdoStatement->fetch(PDO::FETCH_ASSOC)) {
 				$data[] = $this->cast($row);
 			}
 
@@ -75,7 +75,7 @@
 
 		public function fetchRow ()
 		{
-			$row = $this->pdoStatement->fetch();
+			$row = $this->pdoStatement->fetch(PDO::FETCH_ASSOC);
 
 			if ($row) {
 				return $this->cast($row);
@@ -105,10 +105,10 @@
 
 		public function fetchField ($field = null)
 		{
-			$row = $this->pdoStatement->fetch();
+			$row = $this->pdoStatement->fetch(PDO::FETCH_ASSOC);
 
 			if (is_null($field)) {
-				return $row[0];
+				return array_shift($row);
 			} else {
 				return $row[$field];
 			}

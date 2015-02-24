@@ -248,6 +248,49 @@
 
 
 		/**
+		 * @param null|DatabaseQuery $inputQuery
+		 *
+		 * @return DatabaseResult|null
+		 * @throws QueryBuilderException
+		 */
+		public function getRows ($inputQuery = null)
+		{
+			$query = $this->database->createQuery();
+
+			foreach ($this->getSingleParentRelations() as $relation) {
+				$key = strstr($relation['key'], '.')
+					? $relation['key']
+					: $this->table . '.' . $relation['key'];
+
+				$foreignKey = strstr($relation['foreign_key'], '.')
+					? $relation['foreign_key']
+					: $relation['table'] . '.' . $relation['foreign_key'];
+
+				$query->leftJoin(
+					$relation['table'],
+					$this->database->createCondition()->equal(
+						$key,
+						$this->database->quoteIdentifier($foreignKey)
+					)
+				)
+					->fields(array($relation['table'] . '.*'));
+			}
+
+			$query->select()
+				->from($this->table)
+				->fields(array($this->table . '.*'));
+
+			if (!is_null($inputQuery)) {
+				$query->composeWith($inputQuery);
+			}
+
+			$query->setEntity($this->entityRule);
+
+			return $query->execute();
+		}
+
+
+		/**
 		 * @param array|object|Entity $row
 		 * @param bool                $filterColumns
 		 *
@@ -371,49 +414,6 @@
 
 
 		/**
-		 * @param null|DatabaseQuery $inputQuery
-		 *
-		 * @return DatabaseResult|null
-		 * @throws QueryBuilderException
-		 */
-		public function getRows ($inputQuery = null)
-		{
-			$query = $this->database->createQuery();
-
-			foreach ($this->getSingleParentRelations() as $relation) {
-				$key = strstr($relation['key'], '.')
-					? $relation['key']
-					: $this->table . '.' . $relation['key'];
-
-				$foreignKey = strstr($relation['foreign_key'], '.')
-					? $relation['foreign_key']
-					: $relation['table'] . '.' . $relation['foreign_key'];
-
-				$query->leftJoin(
-						$relation['table'],
-						$this->database->createCondition()->equal(
-							$key,
-							$this->database->quoteIdentifier($foreignKey)
-						)
-					)
-					->fields(array($relation['table'] . '.*'));
-			}
-
-			$query->select()
-				->from($this->table)
-				->fields(array($this->table . '.*'));
-
-			if (!is_null($inputQuery)) {
-				$query->composeWith($inputQuery);
-			}
-
-			$query->setEntity($this->entityRule);
-
-			return $query->execute();
-		}
-
-
-		/**
 		 * @param string $relationIdentifier
 		 * @param int    $id
 		 * @param null   $inputQuery
@@ -523,40 +523,11 @@
 		 */
 		public function getRow ($id)
 		{
-			$query = $this->database->createQuery();
+			$query = $this->database->createQuery()
+				->whereEqual($this->table . '.' . $this->getPrimaryKey(), $id)
+				->limit(1);
 
-			foreach ($this->getSingleParentRelations() as $relation) {
-				$key =
-					strstr($relation['key'], '.')
-						? $this->database->quoteIdentifier($relation['key'])
-						: $this->database->quoteIdentifier($this->table . '.' . $relation['key']);
-
-				$foreign_key =
-					strstr($relation['foreign_key'], '.')
-						? $this->database->quoteIdentifier($relation['foreign_key'])
-						: $this->database->quoteIdentifier($relation['table'] . '.' . $relation['foreign_key']);
-
-				$query->leftJoin(
-					$relation['table'],
-					$query->createCondition()
-						->equal($key, $foreign_key)
-				)
-					->fields(array($this->database->quoteIdentifier($relation['table']) . '.*'));
-			}
-
-			$result = $query
-				->select()
-				->from($this->table)
-				->fields(array($this->database->quoteIdentifier($this->table) . '.*'))
-				->where(
-					$query->createCondition()
-						->equal($this->table . '.' . $this->getPrimaryKey(), $id)
-				)
-				->limit(1)
-				->setEntity($this->entityRule)
-				->execute();
-
-			return $result->fetchRow();
+			return $this->getRows($query)->fetchRow();
 		}
 
 
@@ -980,7 +951,7 @@
 		 */
 		protected function filterColumns ($row)
 		{
-			$columns = $this->database->getFields($this->table);
+			$columns = $this->database->getFields($this->table)->fetchColumn('Field');
 
 			return array_intersect_key($row, array_flip($columns));
 		}

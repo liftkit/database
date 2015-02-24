@@ -7,12 +7,10 @@
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Schema\Table\Table;
-	use LiftKit\Database\Result\Result;
-
-	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
+	use LiftKit\Database\Query\Query;
 
 	use LiftKit\Tests\Unit\Database\DefaultTestCase;
-	use PHPUnit_Extensions_Database_DataSet_QueryDataSet;
+	use PDO;
 
 
 	class TableTest extends DefaultTestCase
@@ -93,17 +91,54 @@
 		}
 
 
-		protected function assertResultEqualToQuery (Result $result, $query)
+		public function testGetRowsWithQuery ()
 		{
-			$resultDataSet = new ArrayDataSet(
+			$query = $this->connection->createQuery()
+				->orderBy('child_id', Query::QUERY_ORDER_DESC);
+
+			$this->assertResultEqualToQuery(
+				$this->childrenTable->getRows($query),
+				"
+					SELECT parents.*, children.*
+					FROM children
+					LEFT JOIN parents USING(parent_id)
+					ORDER BY child_id DESC
+				"
+			);
+		}
+
+
+		public function testGetRow ()
+		{
+			$row = $this->childrenTable->getRow(1);
+
+			$sql = "SELECT parents.*, children.*
+					FROM children
+					LEFT JOIN parents ON children.parent_id = parents.parent_id
+					WHERE child_id = 1";
+			$result = self::$pdo->query($sql);
+
+			$this->assertEquals(
+				$row->toArray(),
+				$result->fetch(PDO::FETCH_ASSOC)
+			);
+		}
+
+
+		public function testInsertRow ()
+		{
+			$sql = "SELECT * FROM children";
+			$beforeCount = $this->createTableFromQuery($sql)->getRowCount();
+
+			$this->childrenTable->insertRow(
 				array(
-					'result_table' => $result->flatten()
+					'child_id' => 100,
+					'child_name' => 'child100',
 				)
 			);
 
-			$queryDataSet = new PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
-			$queryDataSet->addTable('result_table', $query);
+			$afterCount = $this->createTableFromQuery($sql)->getRowCount();
 
-			$this->assertTablesEqual($resultDataSet->getTable('result_table'), $queryDataSet->getTable('result_table'));
+			$this->assertEquals($afterCount - $beforeCount, 1);
 		}
 	}
