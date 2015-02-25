@@ -8,11 +8,13 @@
 	 */
 
 
-	namespace LiftKit\Models;
-
+	namespace LiftKit\Database\Model;;
 
 	use LiftKit\Database\Connection\Connection;
+	
 	use LiftKit\Database\Schema\Schema;
+	use LiftKit\Database\Table\Table;
+	
 	use LiftKit\Database\Query\Query;
 	use LiftKit\Database\Query\Condition\Condition;
 
@@ -81,6 +83,17 @@
 		protected function quoteIdentifier ($identifier)
 		{
 			return $this->database->quoteIdentifier($identifier);
+		}
+		
+		
+		/**
+		 * @param string $tableName
+		 *
+		 * @return Table
+		 */
+		protected function getTable ($tableName)
+		{
+			return $this->schema->getTable($tableName);
 		}
 	}
 
