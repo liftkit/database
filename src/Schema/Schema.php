@@ -3,8 +3,9 @@
 
 	namespace LiftKit\Database\Schema;
 	
-	use LiftKit\Database\Connection;
-	use LiftKit\Database\Schema\Table;
+	use LiftKit\Database\Connection\Connection;
+	use LiftKit\Database\Schema\Table\Table;
+	use LiftKit\Database\Schema\Exception\NonexistentTable as NonexistentTableException;
 	
 	
 	class Schema
@@ -37,6 +38,10 @@
 		
 		public function getTable ($tableName)
 		{
-			return $this->tables[$tableName];
+			if (isset($this->tables[$tableName])) {
+				return $this->tables[$tableName];
+			} else {
+				throw new NonexistentTableException('No such table ' . var_export($tableName, true));
+			}
 		}
 	}
