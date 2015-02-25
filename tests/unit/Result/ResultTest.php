@@ -5,6 +5,7 @@
 
 	use LiftKit\Database\Result\Result;
 	use LiftKit\Tests\Unit\Database\DefaultTestCase;
+	use LiftKit\Tests\Stub\Database\Entity\Entity as StubEntity;
 	use PDO;
 
 
@@ -79,5 +80,82 @@
 					$pdoRow['child_id']
 				);
 			}
+		}
+		
+		
+		public function testFetchField ()
+		{
+			$sql = 'SELECT child_id 
+					FROM children 
+					ORDER BY child_id
+					LIMIT 1';
+			$childId = $this->connection->query($sql)->fetchField();
+			$testChildId = self::$pdo->query($sql)->fetchColumn();
+			
+			$this->assertEquals($childId, $testChildId);
+		}
+		
+		
+		public function testTransform ()
+		{
+			$sql = 'SELECT child_id 
+					FROM children';
+			$columnsResult = $this->connection->query($sql)->fetchColumn('child_id');
+			
+			$transformedResult = $this->connection->query($sql)->transform(
+				function ($row)
+				{
+					return $row['child_id'];
+				}
+			);
+			
+			$this->assertEquals($columnsResult, $transformedResult);
+		}
+		
+		
+		public function testFlatten ()
+		{
+			$sql = 'SELECT *
+					FROM children';
+			$flattened = $this->connection->query($sql)->flatten();
+			
+			$transformed = $this->connection->query($sql)->transform(
+				function ($row) 
+				{
+					return $row->toArray();
+				}
+			);
+			
+			$this->assertEquals($flattened, $transformed);
+		}
+		
+		
+		public function testCount ()
+		{
+			$sql = 'SELECT *
+					FROM children';
+			
+			$resultCount = $this->connection->query($sql)->count();
+			$pdoCount = self::$pdo->query($sql)->rowCount();
+			
+			$this->assertEquals($resultCount, $pdoCount);
+		}
+		
+		
+		public function testEntity ()
+		{
+			$this->container->setRule(
+				'StubEntity',
+				function ($container, $data)
+				{
+					return new StubEntity($data);
+				}
+			);
+			
+			$sql = 'SELECT *
+					FROM children';
+			$entity = $this->connection->query($sql, array(), 'StubEntity')->fetchRow();
+			
+			$this->assertTrue($entity instanceof StubEntity);
 		}
 	}

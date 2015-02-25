@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "828dbff36a9a1097751af727578e349f",
+    "hash": "c846dbe86b628d5dd2a2be4281fad702",
     "packages": [
         {
             "name": "liftkit/collection",
@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/liftkit/collection",
-                "reference": "6494051909c07419541da73dec8c2ac6ace6b984"
+                "reference": "bf384e192228bcde8224bba61e1a730595d393af"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.5.*"
@@ -21,7 +21,7 @@
             "autoload": {
                 "psr-4": {
                     "LiftKit\\": "src/",
-                    "LiftKit\\Tests\\": "tests/"
+                    "LiftKit\\Tests\\Unit\\": "tests/unit/"
                 }
             },
             "license": [
@@ -36,7 +36,7 @@
                 }
             ],
             "description": "LiftKit base class for collections",
-            "time": "2015-02-22 01:54:41"
+            "time": "2015-02-23 23:07:02"
         },
         {
             "name": "liftkit/dependency-injection",
@@ -44,12 +44,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/liftkit/dependency-injection",
-                "reference": "866d22978cc027c3173ca0a72f099b40cbce53ae"
+                "reference": "622c9e7080edc30e7fd76b6efd611d6f1c557490"
+            },
+            "require-dev": {
+                "phpunit/dbunit": "1.2.*",
+                "phpunit/phpunit": "4.5.*"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "LiftKit\\DependencyInjection\\": "src/"
+                    "LiftKit\\DependencyInjection\\": "src/",
+                    "LiftKit\\Tests\\Unit\\DependencyInjection\\": "tests/unit/"
                 }
             },
             "license": [
@@ -64,7 +69,7 @@
                 }
             ],
             "description": "Dependency injection library for LiftKit",
-            "time": "2015-02-16 16:49:21"
+            "time": "2015-02-24 00:38:43"
         }
     ],
     "packages-dev": [

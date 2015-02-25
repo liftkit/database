@@ -188,36 +188,6 @@
 		}
 
 
-		public function getFirst()
-		{
-			$this->rewind();
-			return $this->getNext();
-		}
-
-
-		public function hasNext()
-		{
-			return ($this->count() > 0) && (($this->cursor + 1) < $this->count());
-		}
-
-
-		public function getNext()
-		{
-			if ($this->next()) {
-				return $this->cast($this->current);
-			} else {
-				$this->rewind();
-			}
-			return false;
-		}
-
-
-		public function getCurrent()
-		{
-			return $this->current();
-		}
-
-
 		protected function cast($data)
 		{
 			if (is_null($this->entityName)) {
@@ -229,6 +199,12 @@
 					array($data)
 				);
 			}
+		}
+
+
+		protected function hasNext()
+		{
+			return ($this->count() > 0) && (($this->cursor + 1) < $this->count());
 		}
 	}
 
