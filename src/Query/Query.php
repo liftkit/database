@@ -453,9 +453,13 @@
 		}
 
 
-		public function update ()
+		public function update ($table = null)
 		{
 			$this->type = self::QUERY_TYPE_UPDATE;
+
+			if ($table) {
+				$this->table($table);
+			}
 
 			return $this;
 		}
@@ -763,7 +767,7 @@
 
 		protected function processFields ()
 		{
-			if (empty($this->fields)) {
+			if (empty($this->fields) && $this->getType() == self::QUERY_TYPE_SELECT) {
 				return $this->database->quoteIdentifier('*');
 			} else {
 				return implode(', ', $this->fields);

@@ -125,20 +125,72 @@
 		}
 
 
+		public function testGetRowByValue ()
+		{
+			$row = $this->childrenTable->getRowByValue('child_name', 'child1');
+
+			$sql = "SELECT parents.*, children.*
+					FROM children
+					LEFT JOIN parents ON children.parent_id = parents.parent_id
+					WHERE child_name = 'child1'
+					LIMIT 1";
+			$result = self::$pdo->query($sql);
+
+			$this->assertEquals(
+				$row->toArray(),
+				$result->fetch(PDO::FETCH_ASSOC)
+			);
+		}
+
+
 		public function testInsertRow ()
 		{
 			$sql = "SELECT * FROM children";
 			$beforeCount = $this->createTableFromQuery($sql)->getRowCount();
 
-			$this->childrenTable->insertRow(
-				array(
-					'child_id' => 100,
-					'child_name' => 'child100',
-				)
+			$insertData = array(
+				'child_id' => '100',
+				'child_name' => 'child100',
 			);
+
+			$this->childrenTable->insertRow($insertData);
 
 			$afterCount = $this->createTableFromQuery($sql)->getRowCount();
 
 			$this->assertEquals($afterCount - $beforeCount, 1);
+
+			$child = $this->childrenTable->getRow(100);
+
+			$this->assertEquals(array_intersect_key($child->toArray(), $insertData), $insertData);
+		}
+
+
+		public function testUpdateRow ()
+		{
+			$updateData = array(
+				'child_id' => '1',
+				'child_name' => 'new_child_name',
+			);
+
+			$this->childrenTable->updateRow($updateData);
+			$child = $this->childrenTable->getRow('1');
+
+			$this->assertEquals(array_intersect_key($child->toArray(), $updateData), $updateData);
+		}
+
+
+		public function testDeleteRow ()
+		{
+			$child = $this->childrenTable->getRow(1);
+			$this->assertNotNull($child);
+
+			$beforeCount = $this->childrenTable->getRows()->count();
+			$this->childrenTable->deleteRow(1);
+			$afterCount = $this->childrenTable->getRows()->count();
+
+			$this->assertEquals($beforeCount - $afterCount, 1);
+
+			$child = $this->childrenTable->getRow(1);
+			$this->assertNull($child);
 		}
 	}
