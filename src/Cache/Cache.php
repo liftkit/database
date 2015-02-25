@@ -27,8 +27,8 @@
 				);
 			}
 		}
-		
-		
+
+
 		public function refreshCacheForTables ($dependentTables)
 		{
 			foreach ($this->cachedQueries as $index => $cachedQuery) {
@@ -60,6 +60,18 @@
 				return $result;
 			} else {
 				return null;
+			}
+		}
+
+
+		public function isCached ($query)
+		{
+			if ($query instanceof DatabaseQuery) {
+				return $this->cachedQueries[$query->getRaw()]['result']
+					&& $query->getType() == DatabaseQuery::QUERY_TYPE_SELECT
+					&& $query->isCached();
+			} else {
+				return false;
 			}
 		}
 

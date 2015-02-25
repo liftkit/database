@@ -99,28 +99,38 @@
 		 * @access public
 		 * @todo implement cache
 		 *
-		 * @param string $sql
+		 * @param string $query
 		 * @param array  $data (default: array())
 		 * @param string $entity (default: null)
 		 *
 		 * @return DatabaseResult
 		 */
 
-		public function query ($sql, $data = array(), $entity = null)
+		public function query ($query, $data = array(), $entity = null)
 		{
-			if ($sql instanceof DatabaseQuery) {
-				$sql = $sql->getRaw();
-			}
+			if ($this->cache->isCached($query)) {
+				return $this->cache->getCachedResult($query);
+			} else {
+				$statement = $this->database->prepare((string) $query);
+				$result = $statement->execute($data);
 
-			$statement = $this->database->prepare($sql);
-			$result = $statement->execute($data);
+				$this->lastQuery = $statement->queryString;
 
-			$this->lastQuery = $statement->queryString;
+				if (! $result) {
+					throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $statement->queryString . '"');
+				}
 
-			if (! $result) {
-				throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $statement->queryString . '"');
-			}else {
-				return $this->createResult($statement, $entity);
+				$databaseResult = $this->createResult($statement, $entity);
+
+				if ($query instanceof DatabaseQuery && $databaseResult instanceof DatabaseResult) {
+					$this->cache->cacheQuery($query, $databaseResult);
+				}
+
+				if ($query instanceof DatabaseQuery) {
+					$this->cache->refreshCache($query);
+				}
+
+				return $databaseResult;
 			}
 		}
 
@@ -272,6 +282,12 @@
 			} else {
 				return true;
 			}
+		}
+
+
+		protected function executeQuery ($query)
+		{
+
 		}
 	}
 

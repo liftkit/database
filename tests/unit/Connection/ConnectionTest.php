@@ -162,4 +162,24 @@
 			$result = $this->connection->query("SELECT * FROM parents");
 			$this->assertEquals($result->count(), 4);
 		}
+
+
+		public function testCache ()
+		{
+			$query = $this->connection->createQuery()
+				->select('*')
+				->from('children');
+
+			$this->assertNotSame(
+				$this->connection->query($query),
+				$this->connection->query($query)
+			);
+
+			$query->setCache(true);
+
+			$this->assertSame(
+				$this->connection->query($query),
+				$this->connection->query($query)
+			);
+		}
 	}
