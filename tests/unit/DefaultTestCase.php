@@ -71,6 +71,15 @@
 		}
 
 
+		protected function assertResultEqualToResult (Result $result1, Result $result2)
+		{
+			$this->assertTablesEqual(
+				$this->createTableFromResult($result1),
+				$this->createTableFromResult($result2)
+			);
+		}
+
+
 		protected function assertCommonFieldsMatch ($row, $compare)
 		{
 			$this->assertEquals(array_intersect_key($row, $compare), array_intersect_key($compare, $row));

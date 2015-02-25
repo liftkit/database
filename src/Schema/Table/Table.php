@@ -817,17 +817,7 @@
 
 		public function getParents ($relationIdentifier, $id, $inputQuery = null)
 		{
-			$relation = $this->getRelation($relationIdentifier);
-
-			if (!$relation) {
-				throw new RelationException('Invalid relation `' . $relationIdentifier);
-			}
-
-			if ($relation['type'] == self::MANY_TO_MANY) {
-				return $this->getChildren($relationIdentifier, $id, $inputQuery);
-			} else {
-				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
-			}
+			return $this->getChildren($relationIdentifier, $id, $inputQuery);
 		}
 
 
@@ -852,31 +842,16 @@
 				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
 			}
 
-			$query = $this->database->createQuery();
+			$row = $this->getRow($id);
 
-			if ($relation['type'] == self::MANY_TO_ONE) {
-				$row = $this->getRow($id);
-
-				$query->select()
-					->from($relation['table'])
-					->where(
-						$query->createCondition()
-							->equal($relation['foreign_key'], $row[$relation['key']])
-					);
-			} else if ($relation['type'] == self::ONE_TO_ONE) {
-				$row = $this->getRow($id);
-
-				$query->select()
-					->from($relation['table'])
-					->where(
-						$query->createCondition()
-							->equal($relation['foreign_key'], $row[$relation['key']])
-					);
-			} else {
-				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
-			}
-
-			$query->fields(array('*'));
+			$query = $this->database->createQuery()
+				->select()
+				->fields(array('*'))
+				->from($relation['table'])
+				->where(
+					$this->database->createCondition()
+						->equal($relation['foreign_key'], $row[$relation['key']])
+				);
 
 			if (!is_null($inputQuery)) {
 				$query->composeWith($inputQuery);
@@ -895,18 +870,7 @@
 		 */
 		public function assignParents ($relationIdentifier, $id, $parentIds)
 		{
-			$relation  = $this->getRelation($relationIdentifier);
-			$parentIds = (array)$parentIds;
-
-			if (!$relation) {
-				throw new RelationException('Invalid relation `' . $relationIdentifier);
-			}
-
-			if ($relation['type'] == self::MANY_TO_MANY) {
-				$this->assignChildren($relationIdentifier, $id, $parentIds);
-			} else {
-				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
-			}
+			$this->assignChildren($relationIdentifier, $id, $parentIds);
 		}
 
 

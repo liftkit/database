@@ -459,4 +459,24 @@
 				$this->assertCommonFieldsMatch($child->toArray(), $children[$index]);
 			}
 		}
+
+
+		public function testGetParents ()
+		{
+			$this->assertResultEqualToResult(
+				$this->parentsTable->getChildren('friends', 1),
+				$this->parentsTable->getParents('friends', 1)
+			);
+		}
+
+
+		public function testGetParent ()
+		{
+			$child = $this->childrenTable->getRow(1);
+
+			$parent = $this->parentsTable->getRow($child['parent_id']);
+			$childParent = $this->childrenTable->getParent('parents', 1);
+
+			$this->assertCommonFieldsMatch($parent->toArray(), $childParent->toArray());
+		}
 	}
