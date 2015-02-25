@@ -774,6 +774,19 @@
 		}
 
 
+		public function testGetTable ()
+		{
+			$this->query->from('children');
+			$this->assertEquals($this->query->getTable(), 'children');
+			
+			$this->query->into('parents');
+			$this->assertEquals($this->query->getTable(), 'parents');
+			
+			$this->query->table('friends');
+			$this->assertEquals($this->query->getTable(), 'friends');
+		}
+
+
 		public function testGetSetCache ()
 		{
 			$this->query->setCache(true);
