@@ -6,11 +6,11 @@ CREATE TABLE `parents` (
 
 CREATE TABLE `children` (
   `child_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int(11) unsigned NOT NULL,
+  `parent_id` int(11) unsigned DEFAULT NULL,
   `child_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`child_id`),
   KEY `parent_id` (`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `friends` (
   `friend_id` int(11) unsigned NOT NULL AUTO_INCREMENT,

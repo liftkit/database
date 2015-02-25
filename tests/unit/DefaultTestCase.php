@@ -71,6 +71,12 @@
 		}
 
 
+		protected function assertCommonFieldsMatch ($row, $compare)
+		{
+			$this->assertEquals(array_intersect_key($row, $compare), array_intersect_key($compare, $row));
+		}
+
+
 		protected function createTableFromResult (Result $result)
 		{
 			$dataSet = new ArrayDataSet(

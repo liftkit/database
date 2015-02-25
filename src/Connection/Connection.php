@@ -117,7 +117,7 @@
 				$this->lastQuery = $statement->queryString;
 
 				if (! $result) {
-					throw new DatabaseException($this->lastQuery . ': ' . $this->database->errorCode() . ' "' . $statement->queryString . '"');
+					throw new DatabaseException($this->database->errorCode() . ': ' . $this->lastQuery);
 				}
 
 				$databaseResult = $this->createResult($statement, $entity);
@@ -130,7 +130,7 @@
 					$this->cache->refreshCache($query);
 				}
 
-				return $databaseResult;
+				return $this->insertId() ?: $databaseResult;
 			}
 		}
 
@@ -203,13 +203,17 @@
 		 *
 		 * @access public
 		 *
-		 * @param string $string
+		 * @param mixed $string
 		 *
 		 * @return string
 		 */
 		public function quote ($string)
 		{
-			return $this->database->quote($string);
+			if (is_null($string)) {
+				return 'NULL';
+			} else {
+				return $this->database->quote($string);
+			}
 		}
 
 
@@ -282,12 +286,6 @@
 			} else {
 				return true;
 			}
-		}
-
-
-		protected function executeQuery ($query)
-		{
-
 		}
 	}
 

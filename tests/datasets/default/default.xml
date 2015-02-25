@@ -46,6 +46,14 @@
 				<field name="friend_id">3</field>
 				<field name="friend_name">friend3</field>
 			</row>
+			<row>
+				<field name="friend_id">4</field>
+				<field name="friend_name">friend4</field>
+			</row>
+			<row>
+				<field name="friend_id">5</field>
+				<field name="friend_name">friend5</field>
+			</row>
 		</table_data>
 		<table_data name="parent_friends">
 			<row>

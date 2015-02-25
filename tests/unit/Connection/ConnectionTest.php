@@ -124,6 +124,12 @@
 		}
 
 
+		public function testQuoteNull ()
+		{
+			$this->assertEquals('NULL', $this->connection->quote(null));
+		}
+
+
 		public function testInsertId ()
 		{
 			$sql = "INSERT INTO parents
@@ -210,6 +216,5 @@
 				$beforeCache,
 				$this->connection->query($query)
 			);
-
 		}
 	}

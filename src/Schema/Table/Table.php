@@ -14,7 +14,7 @@
 	use LiftKit\Database\Query\Condition as DatabaseQueryCondition;
 	use LiftKit\Database\Entity\Entity;
 
-	use LiftKit\Database\Exception\Database as DatabaseException;
+	use LiftKit\Database\Schema\Table\Exception\Relation as RelationException;
 	use LiftKit\Database\Query\Exception\Query as QueryBuilderException;
 
 
@@ -100,7 +100,7 @@
 		 * @param null|string $relationIdentifier
 		 *
 		 * @return $this
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function oneToOne ($table, $foreignKey = null, $key = null, $relationIdentifier = null)
 		{
@@ -117,7 +117,7 @@
 			}
 
 			if (isset($this->relations[$relationIdentifier])) {
-				throw new DatabaseException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
+				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
 			}
 
 			$this->relations[$relationIdentifier] = array(
@@ -138,7 +138,7 @@
 		 * @param null|string $relationIdentifier
 		 *
 		 * @return $this
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function oneToMany ($table, $foreignKey = null, $key = null, $relationIdentifier = null)
 		{
@@ -155,7 +155,7 @@
 			}
 
 			if (isset($this->relations[$relationIdentifier])) {
-				throw new DatabaseException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
+				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
 			}
 
 			$this->relations[$relationIdentifier] = array(
@@ -176,7 +176,7 @@
 		 * @param null|string $relationIdentifier
 		 *
 		 * @return $this
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function manyToOne ($table, $foreignKey = null, $key = null, $relationIdentifier = null)
 		{
@@ -193,7 +193,7 @@
 			}
 
 			if (isset($this->relations[$relationIdentifier])) {
-				throw new DatabaseException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
+				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
 			}
 
 			$this->relations[$relationIdentifier] = array(
@@ -215,7 +215,7 @@
 		 * @param null|string $relationIdentifier
 		 *
 		 * @return $this
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function manyToMany ($table, $relationalTable, $foreignKey = null, $key = null, $relationIdentifier = null)
 		{
@@ -232,7 +232,7 @@
 			}
 
 			if (isset($this->relations[$relationIdentifier])) {
-				throw new DatabaseException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
+				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
 			}
 
 			$this->relations[$relationIdentifier] = array(
@@ -291,6 +291,39 @@
 
 
 		/**
+		 * @param int $id
+		 *
+		 * @return Entity|mixed|null
+		 * @throws QueryBuilderException
+		 */
+		public function getRow ($id)
+		{
+			$query = $this->database->createQuery()
+				->whereEqual($this->table . '.' . $this->getPrimaryKey(), $id)
+				->limit(1);
+
+			return $this->getRows($query)->fetchRow();
+		}
+
+
+		/**
+		 * @param $columnName
+		 * @param $value
+		 *
+		 * @return \LiftKit\Database\Entity\Entity|mixed|null
+		 */
+		public function getRowByValue ($columnName, $value)
+		{
+			$query = $this->database->createQuery()
+				->whereEqual($columnName, $value)
+				->limit(1);
+
+			return $this->getRows($query)
+				->fetchRow();
+		}
+
+
+		/**
 		 * @param array|object|Entity $row
 		 * @param bool                $filterColumns
 		 *
@@ -331,43 +364,6 @@
 				->execute();
 
 			return $this->database->insertId();
-		}
-
-
-		/**
-		 * @param string              $relationIdentifier
-		 * @param int                 $id
-		 * @param array|object|Entity $row
-		 * @param null|string         $foreignKey
-		 *
-		 * @return int
-		 * @throws DatabaseException
-		 */
-		public function insertChild ($relationIdentifier, $id, $row, $foreignKey = null)
-		{
-			$relation = $this->getRelation($relationIdentifier);
-
-			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
-			}
-
-			if ($relation['type'] == self::ONE_TO_MANY || $relation['type'] == self::MANY_TO_MANY || $relation['type'] == self::ONE_TO_ONE) {
-				if (is_null($foreignKey)) {
-					$foreignKey = $this->getPrimaryKey();
-				}
-
-				$row[$foreignKey] = $id;
-
-				$this->database->createQuery()
-					->insert()
-					->into($relation['table'])
-					->set($row)
-					->execute();
-
-				return $this->database->insertId();
-			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
-			}
 		}
 
 
@@ -419,7 +415,7 @@
 		 * @param null   $inputQuery
 		 *
 		 * @return DatabaseResult|null
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 * @throws QueryBuilderException
 		 */
 		public function getChildren ($relationIdentifier, $id, $inputQuery = null)
@@ -444,11 +440,11 @@
 						$relation['foreign_key']
 					)
 					->where(
-						$query->createCondition()
+						$this->database->createCondition()
 							->equal($relation['relational_table'] . '.' . $relation['key'], $id)
 					);
 			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
 			}
 
 			if (!is_null($query)) {
@@ -460,134 +456,83 @@
 
 
 		/**
-		 * @param string             $relationIdentifier
-		 * @param int                $id
-		 * @param null|DatabaseQuery $inputQuery
-		 *
-		 * @return \LiftKit\Database\Entity\Entity|mixed|null
-		 * @throws DatabaseException
-		 * @throws QueryBuilderException
-		 */
-		public function getParent ($relationIdentifier, $id, $inputQuery = null)
-		{
-			$relation = $this->getRelation($relationIdentifier);
-
-			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
-			}
-
-			if ($relation['type'] != self::MANY_TO_ONE && $relation['type'] == self::ONE_TO_ONE) {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
-			}
-
-			$query = $this->database->createQuery();
-
-			if ($relation['type'] == self::MANY_TO_ONE) {
-				$row = $this->getRow($id);
-
-				$query->select()
-					->from($relation['table'])
-					->where(
-						$query->createCondition()
-							->equal($relation['foreign_key'], $row[$relation['key']])
-					);
-			} else if ($relation['type'] == self::ONE_TO_ONE) {
-				$row = $this->getRow($id);
-
-				$query->select()
-					->from($relation['table'])
-					->where(
-						$query->createCondition()
-							->equal($relation['foreign_key'], $row[$relation['key']])
-					);
-			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
-			}
-
-			$query->fields(array('*'));
-
-			if (!is_null($inputQuery)) {
-				$query->composeWith($inputQuery);
-			}
-
-			return $query->execute()
-				->fetchRow();
-		}
-
-
-		/**
+		 * @param string $relationIdentifier
 		 * @param int $id
+		 * @param int $childId
 		 *
 		 * @return Entity|mixed|null
-		 * @throws QueryBuilderException
+		 * @throws RelationException
 		 */
-		public function getRow ($id)
+		public function getChild ($relationIdentifier, $id, $childId)
 		{
-			$query = $this->database->createQuery()
-				->whereEqual($this->table . '.' . $this->getPrimaryKey(), $id)
-				->limit(1);
+			$relation = $this->getRelation($relationIdentifier);
 
-			return $this->getRows($query)->fetchRow();
+			$query = $this->database->createQuery()
+				->whereEqual($this->database->primaryKey($relation['table']), $childId);
+
+			return $this->getChildren($relationIdentifier, $id, $query)->fetchRow();
 		}
 
 
 		/**
-		 * @param $columnName
-		 * @param $value
+		 * @param string              $relationIdentifier
+		 * @param int                 $id
+		 * @param array|object|Entity $row
+		 * @param null|string         $foreignKey
 		 *
-		 * @return \LiftKit\Database\Entity\Entity|mixed|null
+		 * @return int
+		 * @throws RelationException
 		 */
-		public function getRowByValue ($columnName, $value)
-		{
-			$query = $this->database->createQuery()
-				->whereEqual($columnName, $value)
-				->limit(1);
-
-			return $this->getRows($query)
-				->fetchRow();
-		}
-
-
-		/**
-		 * @param      $relationIdentifier
-		 * @param      $id
-		 * @param null $input_query
-		 *
-		 * @return DatabaseResult
-		 * @throws Database
-		 */
-
-		public function getParents ($relationIdentifier, $id, $input_query = null)
+		public function insertChild ($relationIdentifier, $id, $row, $foreignKey = null)
 		{
 			$relation = $this->getRelation($relationIdentifier);
 
 			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
 			}
 
-			$query = $this->database->createQuery();
+			if ($relation['type'] == self::ONE_TO_MANY || $relation['type'] == self::ONE_TO_ONE) {
+				if (is_null($foreignKey)) {
+					$foreignKey = $this->getPrimaryKey();
+				}
 
-			if ($relation['type'] == self::MANY_TO_MANY) {
-				$query->select()
-					->fields(array('*'))
-					->from($relation['relational_table'])
-					->leftJoinUsing(
-						$relation['table'],
-						$relation['foreign_key']
-					)
-					->where(
-						$this->database->createCondition()
-							->equal($relation['key'], $id)
-					);
+				$row[$foreignKey] = $id;
+
+				$this->database->createQuery()
+					->insert()
+					->into($relation['table'])
+					->set($row)
+					->execute();
+
+				return $this->database->insertId();
+
+			} else if ($relation['type'] == self::MANY_TO_MANY) {
+				if (is_null($foreignKey)) {
+					$foreignKey = $this->getPrimaryKey();
+				}
+
+				$childId = $this->database->createQuery()
+					->insert()
+					->into($relation['table'])
+					->set($row)
+					->execute();
+
+				$relation = array(
+					$foreignKey => $id,
+					$this->database->getPrimaryKey($relation['table']) => $childId,
+				);
+
+				$this->database->createQuery()
+					->insert()
+					->into($relation['relational_table'])
+					->set($relation)
+					->execute();
+
+				return $childId;
+
 			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
 			}
-
-			if (!is_null($input_query)) {
-				$query->composeWith($input_query);
-			}
-
-			return $query->execute();
 		}
 
 
@@ -597,7 +542,7 @@
 		 * @param array  $childIds
 		 * @param bool   $subtractive
 		 *
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function assignChildren ($relationIdentifier, $id, $childIds, $subtractive = true)
 		{
@@ -605,7 +550,7 @@
 			$childIds = (array)$childIds;
 
 			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
 			}
 
 			if ($relation['type'] == self::ONE_TO_MANY) {
@@ -645,16 +590,16 @@
 
 				$query = $this->database->createQuery();
 
-				$assigned_ids =
+				$assignedIds =
 					$query->select($relation['foreign_key'])
 						->from($relation['relational_table'])
 						->whereEqual($relation['key'], $id)
 						->execute()
 						->fetchColumn();
 
-				$new_ids = array_diff($childIds, $assigned_ids);
+				$newIds = array_diff($childIds, $assignedIds);
 
-				foreach ($new_ids as $new_id) {
+				foreach ($newIds as $new_id) {
 					$this->database->createQuery()
 						->insert()
 						->into($relation['relational_table'])
@@ -667,7 +612,7 @@
 						->execute();
 				}
 			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
 			}
 		}
 
@@ -677,14 +622,14 @@
 		 * @param int    $id
 		 * @param int    $childId
 		 *
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function assignChild ($relationIdentifier, $id, $childId)
 		{
 			$relation = $this->getRelation($relationIdentifier);
 
 			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
 			}
 
 			if ($relation['type'] == self::ONE_TO_MANY) {
@@ -710,167 +655,7 @@
 					)
 					->execute();
 			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
-			}
-		}
-
-
-		/**
-		 * @param string $relationIdentifier
-		 * @param int    $id
-		 * @param array  $parentIds
-		 *
-		 * @throws DatabaseException
-		 */
-		public function assignParents ($relationIdentifier, $id, $parentIds)
-		{
-			$relation  = $this->getRelation($relationIdentifier);
-			$parentIds = (array)$parentIds;
-
-			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
-			}
-
-			if ($relation['type'] == self::MANY_TO_MANY) {
-				$query = $this->database->createQuery();
-
-				$query->delete()
-					->table($relation['relational_table'])
-					->whereEqual($relation['key'], $id)
-					->whereNotIn($relation['foreign_key'], $parentIds)
-					->execute();
-
-				$query = $this->database->createQuery();
-
-				$assigned_ids =
-					$query->select($relation['foreign_key'])
-						->from($relation['relational_table'])
-						->whereEqual($relation['key'], $id)
-						->execute()
-						->fetchColumn();
-
-				$new_ids = array_diff($parentIds, $assigned_ids);
-
-				foreach ($new_ids as $new_id) {
-					$this->database->createQuery()
-						->insert()
-						->into($relation['relational_table'])
-						->set(
-							array(
-								$relation['key']         => $id,
-								$relation['foreign_key'] => $new_id,
-							)
-						)
-						->execute();
-				}
-			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
-			}
-		}
-
-
-		/**
-		 * @param string  $relationIdentifier
-		 * @param int     $id
-		 * @param array[] $children
-		 * @param bool    $subtractive
-		 * @param bool    $isRelation if true, data in children is to be inserted/updated in the relational
-		 *                            table, otherwise it will be used to update/insert into the child table:
-		 *                            this field is ignored for one-to-many relationships
-		 *
-		 * @throws DatabaseException
-		 */
-		public function setChildren ($relationIdentifier, $id, $children, $subtractive = true, $isRelation = true)
-		{
-			$relation = $this->getRelation($relationIdentifier);
-			$children = (array)$children;
-
-			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
-			}
-
-			if ($relation['type'] == self::ONE_TO_MANY) {
-				$child_ids        = array();
-				$primaryKey       = $this->database->primaryKey($relation['table']);
-				$parentPrimaryKey = $this->getPrimaryKey();
-
-				foreach ($children as $child) {
-					if ($key = $child[$primaryKey]) {
-						$child_ids[]              = $key;
-						$child[$parentPrimaryKey] = $id;
-
-						$this->database->createQuery()
-							->update()
-							->table($relation['table'])
-							->set($child)
-							->whereEqual($primaryKey, $key)
-							->execute();
-					} else {
-						$child[$parentPrimaryKey] = $id;
-
-						$child_ids[] = $this->database->createQuery()
-							->insertUpdate()
-							->into($relation['table'])
-							->set($child)
-							->execute();
-					}
-				}
-
-				if ($subtractive) {
-					$this->database->createQuery()
-						->delete()
-						->from($relation['table'])
-						->whereEqual($parentPrimaryKey, $id)
-						->whereNotIn($primaryKey, $child_ids)
-						->execute();
-				}
-			} else if ($relation['type'] == self::MANY_TO_MANY) {
-				$child_ids = array();
-
-				if ($isRelation) {
-					$table    = $relation['relational_table'];
-					$keyField = $this->database->primaryKey($table);
-				} else {
-					$table    = $relation['table'];
-					$keyField = $relation['foreign_key'];
-				}
-
-				foreach ($children as $child) {
-					if ($isRelation) {
-						$key                     = $child[$keyField];
-						$child[$relation['key']] = $id;
-					} else {
-						$key = $child[$keyField];
-					}
-
-					if ($key) {
-						$child_ids[] = $key;
-
-						$this->database->createQuery()
-							->update()
-							->table($table)
-							->set($child)
-							->whereEqual($keyField, $key)
-							->execute();
-					} else {
-						$child_ids[] = $this->database->createQuery()
-							->insertUpdate()
-							->into($table)
-							->set($child)
-							->execute();
-					}
-				}
-
-				if ($subtractive) {
-					$this->database->createQuery()
-						->delete()
-						->from($relation['relational_table'])
-						->whereEqual($relation['key'], $id)
-						->whereNotIn($relation['foreign_key'], $child_ids)
-						->execute();
-				}
-			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
 			}
 		}
 
@@ -880,14 +665,14 @@
 		 * @param int    $id
 		 * @param int    $childId
 		 *
-		 * @throws DatabaseException
+		 * @throws RelationException
 		 */
 		public function unassignChild ($relationIdentifier, $id, $childId)
 		{
 			$relation = $this->getRelation($relationIdentifier);
 
 			if (!$relation) {
-				throw new DatabaseException('Invalid relation `' . $relationIdentifier);
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
 			}
 
 			if ($relation['type'] == self::ONE_TO_MANY) {
@@ -910,7 +695,217 @@
 					->whereEqual($relation['foreign_key'], $childId)
 					->execute();
 			} else {
-				throw new DatabaseException('Invalid relation type `' . $relation['type'] . '`');
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
+			}
+		}
+
+
+		/**
+		 * @param string  $relationIdentifier
+		 * @param int     $id
+		 * @param array[] $children
+		 * @param bool    $subtractive
+		 * @param bool    $isRelation if true, data in children is to be inserted/updated in the relational
+		 *                            table, otherwise it will be used to update/insert into the child table:
+		 *                            this field is ignored for one-to-many relationships
+		 *
+		 * @throws RelationException
+		 */
+		public function setChildren ($relationIdentifier, $id, $children, $subtractive = true, $isRelation = true)
+		{
+			$relation = $this->getRelation($relationIdentifier);
+			$children = (array)$children;
+
+			if (!$relation) {
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
+			}
+
+			if ($relation['type'] == self::ONE_TO_MANY) {
+				$childIds        = array();
+				$primaryKey       = $this->database->primaryKey($relation['table']);
+				$parentPrimaryKey = $this->getPrimaryKey();
+
+				foreach ($children as $child) {
+					if ($key = $child[$primaryKey]) {
+						$childIds[]               = $key;
+						$child[$parentPrimaryKey] = $id;
+
+						$this->database->createQuery()
+							->insertUpdate()
+							->table($relation['table'])
+							->set($child)
+							->whereEqual($primaryKey, $key)
+							->execute();
+					} else {
+						$child[$parentPrimaryKey] = $id;
+
+						$childIds[] = $this->database->createQuery()
+							->insertUpdate()
+							->into($relation['table'])
+							->set($child)
+							->execute();
+					}
+				}
+
+				if ($subtractive) {
+					$this->database->createQuery()
+						->delete()
+						->from($relation['table'])
+						->whereEqual($parentPrimaryKey, $id)
+						->whereNotIn($primaryKey, $childIds)
+						->execute();
+				}
+			} else if ($relation['type'] == self::MANY_TO_MANY) {
+				$childIds = array();
+
+				if ($isRelation) {
+					$table    = $relation['relational_table'];
+					$keyField = $this->database->primaryKey($table);
+				} else {
+					$table    = $relation['table'];
+					$keyField = $relation['foreign_key'];
+				}
+
+				foreach ($children as $child) {
+					if ($isRelation) {
+						$key                     = $child[$keyField];
+						$child[$relation['key']] = $id;
+					} else {
+						$key = $child[$keyField];
+					}
+
+					if ($key) {
+						$childIds[] = $key;
+
+						$this->database->createQuery()
+							->insertUpdate()
+							->table($table)
+							->set($child)
+							->whereEqual($keyField, $key)
+							->execute();
+					} else {
+						$childIds[] = $this->database->createQuery()
+							->insertUpdate()
+							->into($table)
+							->set($child)
+							->execute();
+					}
+				}
+
+				if ($subtractive) {
+					$this->database->createQuery()
+						->delete()
+						->from($relation['relational_table'])
+						->whereEqual($relation['key'], $id)
+						->whereNotIn($relation['foreign_key'], $childIds)
+						->execute();
+				}
+			} else {
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
+			}
+		}
+
+
+		/**
+		 * @param      $relationIdentifier
+		 * @param      $id
+		 * @param null $inputQuery
+		 *
+		 * @return DatabaseResult
+		 * @throws Database
+		 */
+
+		public function getParents ($relationIdentifier, $id, $inputQuery = null)
+		{
+			$relation = $this->getRelation($relationIdentifier);
+
+			if (!$relation) {
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
+			}
+
+			if ($relation['type'] == self::MANY_TO_MANY) {
+				return $this->getChildren($relationIdentifier, $id, $inputQuery);
+			} else {
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
+			}
+		}
+
+
+		/**
+		 * @param string             $relationIdentifier
+		 * @param int                $id
+		 * @param null|DatabaseQuery $inputQuery
+		 *
+		 * @return \LiftKit\Database\Entity\Entity|mixed|null
+		 * @throws RelationException
+		 * @throws QueryBuilderException
+		 */
+		public function getParent ($relationIdentifier, $id, $inputQuery = null)
+		{
+			$relation = $this->getRelation($relationIdentifier);
+
+			if (! $relation) {
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
+			}
+
+			if ($relation['type'] != self::MANY_TO_ONE && $relation['type'] != self::ONE_TO_ONE) {
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
+			}
+
+			$query = $this->database->createQuery();
+
+			if ($relation['type'] == self::MANY_TO_ONE) {
+				$row = $this->getRow($id);
+
+				$query->select()
+					->from($relation['table'])
+					->where(
+						$query->createCondition()
+							->equal($relation['foreign_key'], $row[$relation['key']])
+					);
+			} else if ($relation['type'] == self::ONE_TO_ONE) {
+				$row = $this->getRow($id);
+
+				$query->select()
+					->from($relation['table'])
+					->where(
+						$query->createCondition()
+							->equal($relation['foreign_key'], $row[$relation['key']])
+					);
+			} else {
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
+			}
+
+			$query->fields(array('*'));
+
+			if (!is_null($inputQuery)) {
+				$query->composeWith($inputQuery);
+			}
+
+			return $query->execute()->fetchRow();
+		}
+
+
+		/**
+		 * @param string $relationIdentifier
+		 * @param int    $id
+		 * @param array  $parentIds
+		 *
+		 * @throws RelationException
+		 */
+		public function assignParents ($relationIdentifier, $id, $parentIds)
+		{
+			$relation  = $this->getRelation($relationIdentifier);
+			$parentIds = (array)$parentIds;
+
+			if (!$relation) {
+				throw new RelationException('Invalid relation `' . $relationIdentifier);
+			}
+
+			if ($relation['type'] == self::MANY_TO_MANY) {
+				$this->assignChildren($relationIdentifier, $id, $parentIds);
+			} else {
+				throw new RelationException('Invalid relation type `' . $relation['type'] . '`');
 			}
 		}
 
