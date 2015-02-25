@@ -182,4 +182,34 @@
 				$this->connection->query($query)
 			);
 		}
+
+
+		public function testRefreshCache ()
+		{
+			$query = $this->connection->createQuery()
+				->select('*')
+				->from('children')
+				->setCache(true);
+
+			$beforeCache = $this->connection->query($query);
+
+			$this->assertSame(
+				$beforeCache,
+				$this->connection->query($query)
+			);
+
+			$updateQuery = $this->connection->createQuery()
+				->update()
+				->table('children')
+				->set(array('child_id' => 123456))
+				->whereEqual('child_id', 12345);
+
+			$this->connection->query($updateQuery);
+
+			$this->assertNotSame(
+				$beforeCache,
+				$this->connection->query($query)
+			);
+
+		}
 	}
