@@ -19,8 +19,8 @@
 		}
 	},
 	"require": {
-		"liftkit/dependency-injection": "1.0.*",
-		"liftkit/collection": "1.0.*"
+		"liftkit/dependency-injection": "1.*",
+		"liftkit/collection": "1.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "4.5.*",

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b4a394eb0fce48c9dc4b3c631b7e8de1",
+    "hash": "7b90bb087ccd6cb04850897b5b804c91",
     "packages": [
         {
             "name": "liftkit/collection",
@@ -46,16 +46,16 @@
         },
         {
             "name": "liftkit/dependency-injection",
-            "version": "v1.0",
+            "version": "v1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/liftkit/dependency-injection.git",
-                "reference": "622c9e7080edc30e7fd76b6efd611d6f1c557490"
+                "reference": "f9e9752a99f2f59653c6fd39f6e657e2e3a23d72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liftkit/dependency-injection/zipball/622c9e7080edc30e7fd76b6efd611d6f1c557490",
-                "reference": "622c9e7080edc30e7fd76b6efd611d6f1c557490",
+                "url": "https://api.github.com/repos/liftkit/dependency-injection/zipball/f9e9752a99f2f59653c6fd39f6e657e2e3a23d72",
+                "reference": "f9e9752a99f2f59653c6fd39f6e657e2e3a23d72",
                 "shasum": ""
             },
             "require-dev": {
@@ -82,7 +82,7 @@
                 }
             ],
             "description": "Dependency injection library for LiftKit",
-            "time": "2015-02-24 00:38:43"
+            "time": "2015-02-26 18:38:14"
         }
     ],
     "packages-dev": [
