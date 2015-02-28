@@ -26,5 +26,10 @@
 				(string) $join,
 				'LEFT JOIN ' . $this->connection->quoteIdentifier('parents') . ' ON (parents.parent_id = children.parent_id)'
 			);
+			
+			$this->assertEquals(
+				$join->getTable(),
+				'parents'
+			);
 		}
 	}
