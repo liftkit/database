@@ -51,10 +51,7 @@
 			$this->connection = new Connection(
 				$this->container,
 				$this->cache,
-				$this->host,
-				$this->user,
-				$this->password,
-				$this->schema
+				self::$pdo
 			);
 
 			$this->query = $this->connection->createQuery();

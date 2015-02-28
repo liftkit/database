@@ -13,6 +13,7 @@
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
 	use LiftKit\Database\Result\Result as DatabaseResult;
 	use LiftKit\Database\Exception\Database as DatabaseException;
+	use LiftKit\Database\Connection\Exception\Connection as ConnectionException;
 	use LiftKit\Database\Cache\Cache as DatabaseCache;
 	use LiftKit\Database\Query\Raw\Raw;
 
@@ -27,7 +28,6 @@
 		protected $primaryKeys = array();
 		protected $lastQuery;
 		protected $loader;
-		protected $cachedQueries = array();
 
 		/**
 		 * @var DatabaseCache
@@ -56,17 +56,6 @@
 
 
 		/**
-		 * @param string $host
-		 * @param string $user
-		 * @param string $password
-		 * @param string $schema
-		 *
-		 * @return mixed
-		 */
-		abstract protected function buildConnectionString ($host, $user, $password, $schema);
-
-
-		/**
 		 * __construct function.
 		 *
 		 * @access public
@@ -79,16 +68,15 @@
 		 * @return void
 		 */
 
-		public function __construct (Container $loader, DatabaseCache $cache, $host, $user, $password, $schema)
+		public function __construct (Container $loader, DatabaseCache $cache, PDO $pdoConnection)
 		{
 			$this->loader = $loader;
 			$this->cache = $cache;
 
 			try {
-				$connectionString = $this->buildConnectionString($host, $user, $password, $schema);
-				$this->database = new PDO($connectionString, $user, $password);
+				$this->database = $pdoConnection;
 			} catch (PDOException $e) {
-				throw new DatabaseException('Database connection error: ' . $e->getMessage());
+				throw new ConnectionException('Database connection error: ' . $e->getMessage());
 			}
 		}
 
