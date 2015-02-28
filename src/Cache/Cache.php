@@ -81,7 +81,7 @@
 			$dependentTables[$query->getTable()] = $query->getTable();
 
 			foreach ($query->getJoins() as $joinData) {
-				$dependentTables[$joinData['table']] = $joinData['table'];
+				$dependentTables[$joinData->getTable()] = $joinData->getTable();
 			}
 
 			return array_values($dependentTables);
