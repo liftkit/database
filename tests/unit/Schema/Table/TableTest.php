@@ -109,15 +109,12 @@
 		{
 			$row = $this->childrenTable->getRow(1);
 
-			$sql = "SELECT parents.*, children.*
+			$this->assertRowEqualToQuery(
+				$row->toArray(),
+				"SELECT parents.*, children.*
 					FROM children
 					LEFT JOIN parents ON children.parent_id = parents.parent_id
-					WHERE child_id = 1";
-			$result = self::$pdo->query($sql);
-
-			$this->assertEquals(
-				$row->toArray(),
-				$result->fetch(PDO::FETCH_ASSOC)
+					WHERE child_id = 1"
 			);
 		}
 

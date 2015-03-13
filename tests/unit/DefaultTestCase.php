@@ -11,6 +11,7 @@
 	use PHPUnit_Extensions_Database_DataSet_QueryDataSet;
 	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
 	use LiftKit\Tests\Helpers\Database\Operation\Truncate as TruncateOperation;
+	use PDO;
 
 
 
@@ -68,6 +69,15 @@
 		protected function getDefaultDataSet ()
 		{
 			return $this->createMySQLXMLDataSet(__DIR__ . '/../datasets/default/default.xml');
+		}
+
+
+		protected function assertRowEqualToQuery ($row, $query)
+		{
+			$this->assertCommonFieldsMatch(
+				$row,
+				self::$pdo->query($query)->fetch(PDO::FETCH_ASSOC)
+			);
 		}
 
 
