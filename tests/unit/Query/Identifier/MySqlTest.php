@@ -8,7 +8,7 @@
 	use LiftKit\Database\Query\Raw\Raw;
 
 
-	class MySQLTest extends PHPUnit_Framework_TestCase
+	class MySqlTest extends PHPUnit_Framework_TestCase
 	{
 
 

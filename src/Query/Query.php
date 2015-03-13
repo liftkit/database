@@ -15,7 +15,9 @@
 	use LiftKit\Database\Query\Exception\Query as QueryBuilderException;
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
 	use LiftKit\Database\Result\Result as DatabaseResult;
+	
 	use LiftKit\Database\Query\Raw\Raw;
+	use LiftKit\Database\Query\Join\Join;
 
 
 	/**
@@ -25,34 +27,39 @@
 	 */
 	class Query
 	{
-		const QUERY_TYPE_SELECT = 'SELECT';
-		const QUERY_TYPE_INSERT = 'INSERT';
+		const QUERY_TYPE_SELECT        = 'SELECT';
+		const QUERY_TYPE_INSERT        = 'INSERT';
 		const QUERY_TYPE_INSERT_IGNORE = 'INSERT IGNORE';
 		const QUERY_TYPE_INSERT_UPDATE = 'INSERT UPDATE';
-		const QUERY_TYPE_UPDATE = 'UPDATE';
-		const QUERY_TYPE_DELETE = 'DELETE';
+		const QUERY_TYPE_UPDATE        = 'UPDATE';
+		const QUERY_TYPE_DELETE        = 'DELETE';
 
-		const QUERY_ORDER_ASC = 'ASC';
+		const QUERY_ORDER_ASC  = 'ASC';
 		const QUERY_ORDER_DESC = 'DESC';
 
 		protected $database;
 
 		protected $type;
 		protected $table;
+		
 		protected $fields = array();
-		protected $data = array();
-		protected $joins = array();
+		protected $data   = array();
+		protected $joins  = array();
 		protected $unions = array();
+		
 		protected $whereCondition;
 		protected $havingCondition;
+		
 		protected $groupBys = array();
 		protected $orderBys = array();
+		
 		protected $start = 0;
 		protected $limit = null;
+		
 		protected $isCached = false;
 
 		protected $entityHydrationRule = null;
-		protected $prependFields = false;
+		protected $prependFields       = false;
 
 		protected $whereConditionMethodMap = array(
 			'whereEqual'              => 'equal',
@@ -500,11 +507,12 @@
 
 		public function leftJoin ($table, $condition)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'LEFT JOIN',
-				'relation'  => 'ON',
-				'condition' => $condition,
+			$this->joins[] = new Join(
+				$this->database,
+				'LEFT JOIN',
+				$table,
+				'ON',
+				$condition
 			);
 
 			return $this;
@@ -513,11 +521,12 @@
 
 		public function leftJoinUsing ($table, $field)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'LEFT JOIN',
-				'relation'  => 'USING',
-				'condition' => $this->filterIdentifier($field),
+			$this->joins[] = new Join(
+				$this->database,
+				'LEFT JOIN',
+				$table,
+				'USING',
+				$this->filterIdentifier($field)
 			);
 
 			return $this;
@@ -526,11 +535,12 @@
 
 		public function leftJoinEqual ($table, $left, $right)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'LEFT JOIN',
-				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
+			$this->joins[] = new Join(
+				$this->database,
+				'LEFT JOIN',
+				$table,
+				'ON',
+				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right)
 			);
 
 			return $this;
@@ -539,11 +549,12 @@
 
 		public function rightJoin ($table, $condition)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'RIGHT JOIN',
-				'relation'  => 'ON',
-				'condition' => $condition,
+			$this->joins[] = new Join(
+				$this->database,
+				'RIGHT JOIN',
+				$table,
+				'ON',
+				$condition
 			);
 
 			return $this;
@@ -552,11 +563,12 @@
 
 		public function rightJoinUsing ($table, $field)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'RIGHT JOIN',
-				'relation'  => 'USING',
-				'condition' => $this->filterIdentifier($field),
+			$this->joins[] = new Join(
+				$this->database,
+				'RIGHT JOIN',
+				$table,
+				'USING',
+				$this->filterIdentifier($field)
 			);
 
 			return $this;
@@ -565,11 +577,12 @@
 
 		public function rightJoinEqual ($table, $left, $right)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'RIGHT JOIN',
-				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
+			$this->joins[] = new Join(
+				$this->database,
+				'RIGHT JOIN',
+				$table,
+				'ON',
+				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right)
 			);
 
 			return $this;
@@ -578,11 +591,12 @@
 
 		public function innerJoin ($table, $condition)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'INNER JOIN',
-				'relation'  => 'ON',
-				'condition' => $condition,
+			$this->joins[] = new Join(
+				$this->database,
+				'INNER JOIN',
+				$table,
+				'ON',
+				$condition
 			);
 
 			return $this;
@@ -591,11 +605,12 @@
 
 		public function innerJoinUsing ($table, $field)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'INNER JOIN',
-				'relation'  => 'USING',
-				'condition' => $this->filterIdentifier($field),
+			$this->joins[] = new Join(
+				$this->database,
+				'INNER JOIN',
+				$table,
+				'USING',
+				$this->filterIdentifier($field)
 			);
 
 			return $this;
@@ -604,11 +619,12 @@
 
 		public function innerJoinEqual ($table, $left, $right)
 		{
-			$this->joins[] = array(
-				'table'     => $table,
-				'type'      => 'INNER JOIN',
-				'relation'  => 'ON',
-				'condition' => $this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
+			$this->joins[] = new Join(
+				$this->database,
+				'INNER JOIN',
+				$table,
+				'ON',
+				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right)
 			);
 
 			return $this;
@@ -799,7 +815,7 @@
 				$joins = array();
 
 				foreach ($this->joins as $join) {
-					$joins[] = $join['type'] . " "  . $this->filterIdentifier($join['table']) . " " . $join['relation'] . " (" . $join['condition'] . ")";
+					$joins[] = $join->toString();
 				}
 
 				return implode("\n", $joins);
@@ -866,15 +882,7 @@
 
 		protected function filterIdentifier ($value)
 		{
-			if ($value instanceof DatabaseQuery) {
-				return '(' . $value->getRaw() . ')';
-
-			} else if (strval(intval($value)) === strval($value) || $value instanceof Raw) {
-				return $value;
-
-			} else {
-				return $this->database->quoteIdentifier($value);
-			}
+			return $this->database->quoteIdentifier($value);
 		}
 	}
 

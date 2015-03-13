@@ -8,7 +8,7 @@
 
 	namespace LiftKit\Database\Connection;
 
-	use LiftKit\Database\Query\Identifier\MySQL as Identifier;
+	use LiftKit\Database\Query\Identifier\MySql as Identifier;
 
 
 	/**
@@ -16,22 +16,8 @@
 	 *
 	 * @package LiftKit\Database\Connection
 	 */
-	class MySQL extends Connection
+	class MySql extends Connection
 	{
-
-
-		/**
-		 * @param string $host
-		 * @param string $user
-		 * @param string $password
-		 * @param string $schema
-		 *
-		 * @return string
-		 */
-		protected function buildConnectionString ($host, $user, $password, $schema)
-		{
-			return 'mysql:dbname=' . $schema . ';host=' . $host;
-		}
 
 
 		/**

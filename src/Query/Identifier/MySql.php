@@ -7,7 +7,7 @@
 	use LiftKit\Database\Query\Query;
 
 
-	class MySQL extends Identifier
+	class MySql extends Identifier
 	{
 
 
