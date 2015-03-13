@@ -444,6 +444,7 @@
 					'parent_friend_relation' => 'looker',
 				),
 				array(
+					'friend_id' => '3',
 					'parent_friend_relation' => 'feeler',
 				)
 			);
