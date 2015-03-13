@@ -10,6 +10,7 @@
 
 	use PHPUnit_Extensions_Database_DataSet_QueryDataSet;
 	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
+	use LiftKit\Tests\Helpers\Database\Operation\Truncate as TruncateOperation;
 
 
 
@@ -47,6 +48,17 @@
 				$this->password,
 				$this->schema
 			);
+		}
+
+
+		public function getSetUpOperation()
+		{
+			$cascadeTruncates = true; // If you want cascading truncates, false otherwise. If unsure choose false.
+
+			return new \PHPUnit_Extensions_Database_Operation_Composite(array(
+				new TruncateOperation($cascadeTruncates),
+				\PHPUnit_Extensions_Database_Operation_Factory::INSERT()
+			));
 		}
 
 
