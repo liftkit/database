@@ -101,9 +101,13 @@
 			} else {
 				try {
 					$statement = $this->database->prepare((string) $query);
-					$statement->execute($data);
-
+					$result = $statement->execute($data);
 					$this->lastQuery = $statement->queryString;
+
+					if (! $result) {
+						throw new DatabaseException(implode(': ', $statement->errorInfo()) . PHP_EOL . PHP_EOL . $query);
+					}
+
 				} catch (PDOException $e) {
 					throw new DatabaseException($e->getMessage() . PHP_EOL . PHP_EOL . $query);
 				}
