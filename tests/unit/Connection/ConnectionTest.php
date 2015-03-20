@@ -217,4 +217,24 @@
 				$this->connection->query($query)
 			);
 		}
+
+
+		public function testGetLastQueryString ()
+		{
+			$sql = "SELECT * FROM children";
+
+			$this->connection->query($sql);
+
+			$this->assertEquals($sql, $this->connection->getLastQueryString());
+		}
+
+
+		/**
+		 * @expectedException \LiftKit\Database\Exception\Database
+		 */
+		public function testFailure ()
+		{
+			$sql = "SELECT xyz FROM asd";
+			$this->connection->query($sql);
+		}
 	}

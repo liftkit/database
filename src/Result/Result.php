@@ -188,6 +188,12 @@
 		}
 
 
+		public function getQueryString ()
+		{
+			return $this->pdoStatement->queryString;
+		}
+
+
 		protected function cast($data)
 		{
 			if (is_null($this->entityName)) {

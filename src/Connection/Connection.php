@@ -99,13 +99,13 @@
 			if ($this->cache->isCached($query)) {
 				return $this->cache->getCachedResult($query);
 			} else {
-				$statement = $this->database->prepare((string) $query);
-				$result = $statement->execute($data);
+				try {
+					$statement = $this->database->prepare((string) $query);
+					$statement->execute($data);
 
-				$this->lastQuery = $statement->queryString;
-
-				if (! $result) {
-					throw new DatabaseException($this->database->errorCode() . ': ' . $this->lastQuery);
+					$this->lastQuery = $statement->queryString;
+				} catch (PDOException $e) {
+					throw new DatabaseException($e->getMessage() . PHP_EOL . PHP_EOL . $query);
 				}
 
 				$databaseResult = $this->createResult($statement, $entity);
@@ -258,6 +258,12 @@
 		public function commit ()
 		{
 			return $this->database->commit();
+		}
+
+
+		public function getLastQueryString ()
+		{
+			return $this->lastQuery;
 		}
 
 
