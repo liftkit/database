@@ -122,7 +122,11 @@
 					$this->cache->refreshCache($query);
 				}
 
-				return $this->insertId() ?: $databaseResult;
+				if ($databaseResult instanceof DatabaseResult) {
+					return $databaseResult;
+				} else {
+					return $this->insertId() ?: $databaseResult;
+				}
 			}
 		}
 

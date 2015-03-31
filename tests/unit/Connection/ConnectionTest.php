@@ -12,6 +12,7 @@
 
 	use LiftKit\Tests\Unit\Database\DefaultTestCase;
 	use LiftKit\Tests\Helpers\Database\DataSet\ArrayDataSet;
+	use LiftKit\Database\Result\Result;
 
 	use PHPUnit_Extensions_Database_DataSet_DataSetFilter;
 
@@ -236,5 +237,19 @@
 		{
 			$sql = "SELECT xyz FROM asd";
 			$this->connection->query($sql);
+		}
+
+
+		public function testResultSetReturnedInsteadOfInsertId ()
+		{
+			$id = $this->connection->query("INSERT INTO parents SET parent_name = 'parent4'");
+
+			$this->assertEquals($id, 4);
+
+			$this->connection->query("INSERT INTO parents SET parent_name = 'parent4'");
+
+			$result = $this->connection->query("SELECT * FROM parents WHERE parent_id = 4");
+
+			$this->assertTrue($result instanceof Result);
 		}
 	}
