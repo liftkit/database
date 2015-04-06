@@ -11,11 +11,10 @@
 	namespace LiftKit\Database\Query;
 
 	use LiftKit\Database\Connection\Connection as Database;
-	use LiftKit\Database\Query\Query as DatabaseQuery;
 	use LiftKit\Database\Query\Exception\Query as QueryBuilderException;
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
 	use LiftKit\Database\Result\Result as DatabaseResult;
-	
+
 	use LiftKit\Database\Query\Raw\Raw;
 	use LiftKit\Database\Query\Join\Join;
 
@@ -24,6 +23,96 @@
 	 * Class Query
 	 *
 	 * @package LiftKit\Database\Query
+	 *
+	 * @method $this whereEqual(mixed $compare, mixed $against)
+	 * @method $this orWhereEqual(mixed $compare, mixed $against)
+	 * @method $this whereNotEqual(mixed $compare, mixed $against)
+	 * @method $this orWhereNotEqual(mixed $compare, mixed $against)
+	 *
+	 * @method $this whereLessThan(mixed $compare, mixed $against)
+	 * @method $this orWhereLessThan(mixed $compare, mixed $against)
+	 * @method $this whereLessThanOrEqual(mixed $compare, mixed $against)
+	 *
+	 * @method $this whereGreaterThan(mixed $compare, mixed $against)
+	 * @method $this orWhereGreaterThan(mixed $compare, mixed $against)
+	 * @method $this whereGreaterThanOrEqual(mixed $compare, mixed $against)
+	 *
+	 * @method $this whereIn(mixed $needle, array $haystack)
+	 * @method $this orWhereIn(mixed $needle, array $haystack)
+	 * @method $this whereNotIn(mixed $needle, array $haystack)
+	 * @method $this orWhereNotIn(mixed $needle, array $haystack)
+	 *
+	 * @method $this whereIs(mixed $compare, mixed $against)
+	 * @method $this orWhereIs(mixed $compare, mixed $against)
+	 * @method $this whereNotIs(mixed $compare, mixed $against)
+	 * @method $this orWhereNotIs(mixed $compare, mixed $against)
+	 *
+	 * @method $this whereLike(mixed $compare, string $expression)
+	 * @method $this orWhereLike(mixed $compare, string $expression)
+	 * @method $this whereNotLike(mixed $compare, string $expression)
+	 * @method $this orWhereNotLike(mixed $compare, string $expression)
+	 *
+	 * @method $this whereRegexp(mixed $compare, string $regexp)
+	 * @method $this orWhereRegexp(mixed $compare, string $regexp)
+	 * @method $this whereNotRegexp(mixed $compare, string $regexp)
+	 * @method $this orWhereNotRegexp(mixed $compare, string $regexp)
+	 *
+	 * @method $this whereCondition(DatabaseQueryCondition $condition)
+	 * @method $this orWhereCondition(DatabaseQueryCondition $condition)
+	 * @method $this whereNotCondition(DatabaseQueryCondition $condition)
+	 * @method $this orWhereNotCondition(DatabaseQueryCondition $condition)
+	 *
+	 * @method $this whereRaw(string $condition)
+	 * @method $this orWhereRaw(string $condition)
+	 * @method $this whereNotRaw(string $condition)
+	 * @method $this orWhereNotRaw(string $condition)
+	 *
+	 * @method $this whereSearch(array $fields, string $query)
+	 *
+	 * @method $this havingEqual(mixed $compare, mixed $against)
+	 * @method $this orHavingEqual(mixed $compare, mixed $against)
+	 * @method $this havingNotEqual(mixed $compare, mixed $against)
+	 * @method $this orHavingNotEqual(mixed $compare, mixed $against)
+	 *
+	 * @method $this havingLessThan(mixed $compare, mixed $against)
+	 * @method $this orHavingLessThan(mixed $compare, mixed $against)
+	 * @method $this havingLessThanOrEqual(mixed $compare, mixed $against)
+	 *
+	 * @method $this havingGreaterThan(mixed $compare, mixed $against)
+	 * @method $this orHavingGreaterThan(mixed $compare, mixed $against)
+	 * @method $this havingGreaterThanOrEqual(mixed $compare, mixed $against)
+	 *
+	 * @method $this havingIn(mixed $needle, array $haystack)
+	 * @method $this orHavingIn(mixed $needle, array $haystack)
+	 * @method $this havingNotIn(mixed $needle, array $haystack)
+	 * @method $this orHavingNotIn(mixed $needle, array $haystack)
+	 *
+	 * @method $this havingIs(mixed $compare, mixed $against)
+	 * @method $this orHavingIs(mixed $compare, mixed $against)
+	 * @method $this havingNotIs(mixed $compare, mixed $against)
+	 * @method $this orHavingNotIs(mixed $compare, mixed $against)
+	 *
+	 * @method $this havingLike(mixed $compare, string $expression)
+	 * @method $this orHavingLike(mixed $compare, string $expression)
+	 * @method $this havingNotLike(mixed $compare, string $expression)
+	 * @method $this orHavingNotLike(mixed $compare, string $expression)
+	 *
+	 * @method $this havingRegexp(mixed $compare, string $regexp)
+	 * @method $this orHavingRegexp(mixed $compare, string $regexp)
+	 * @method $this havingNotRegexp(mixed $compare, string $regexp)
+	 * @method $this orHavingNotRegexp(mixed $compare, string $regexp)
+	 *
+	 * @method $this havingCondition(DatabaseQueryCondition $condition)
+	 * @method $this orHavingCondition(DatabaseQueryCondition $condition)
+	 * @method $this havingNotCondition(DatabaseQueryCondition $condition)
+	 * @method $this orHavingNotCondition(DatabaseQueryCondition $condition)
+	 *
+	 * @method $this havingRaw(string $condition)
+	 * @method $this orHavingRaw(string $condition)
+	 * @method $this havingNotRaw(string $condition)
+	 * @method $this orHavingNotRaw(string $condition)
+	 *
+	 * @method $this havingSearch(array $fields, string $query)
 	 */
 	class Query
 	{
@@ -41,21 +130,21 @@
 
 		protected $type;
 		protected $table;
-		
+
 		protected $fields = array();
 		protected $data   = array();
 		protected $joins  = array();
 		protected $unions = array();
-		
+
 		protected $whereCondition;
 		protected $havingCondition;
-		
+
 		protected $groupBys = array();
 		protected $orderBys = array();
-		
+
 		protected $start = 0;
 		protected $limit = null;
-		
+
 		protected $isCached = false;
 
 		protected $entityHydrationRule = null;
