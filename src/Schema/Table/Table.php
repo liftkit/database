@@ -127,10 +127,6 @@
 				$relationIdentifier = $relatedTable;
 			}
 
-			if (isset($this->relations[$relationIdentifier])) {
-				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
-			}
-
 			$this->relations[$relationIdentifier] = new OneToOne(
 				$this,
 				$this->schema->getTable($relatedTable, true),
@@ -155,10 +151,6 @@
 		{
 			if (is_null($relationIdentifier)) {
 				$relationIdentifier = $relatedTable;
-			}
-
-			if (isset($this->relations[$relationIdentifier])) {
-				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
 			}
 
 			$this->relations[$relationIdentifier] = new OneToMany(
@@ -187,10 +179,6 @@
 				$relationIdentifier = $relatedTable;
 			}
 
-			if (isset($this->relations[$relationIdentifier])) {
-				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
-			}
-
 			$this->relations[$relationIdentifier] = new ManyToOne(
 				$this,
 				$this->schema->getTable($relatedTable, true),
@@ -216,10 +204,6 @@
 		{
 			if (is_null($relationIdentifier)) {
 				$relationIdentifier = $relatedTable;
-			}
-
-			if (isset($this->relations[$relationIdentifier])) {
-				throw new RelationException('A relation with the identifier `' . $relationIdentifier . '` already exists.');
 			}
 
 			$this->relations[$relationIdentifier] = new ManyToMany(
