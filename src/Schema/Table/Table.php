@@ -411,7 +411,7 @@
 			$query    = $this->database->createQuery();
 
 			if ($relation instanceof OneToMany) {
-				$query->whereEqual($relation->getKey(), $id);
+				$query->whereEqual($relation->getRelatedTable() . '.' . $relation->getKey(), $id);
 
 			} else if ($relation instanceof ManyToMany) {
 				$query->addField($relation->getRelationalTable() . '.*')

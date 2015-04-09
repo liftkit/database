@@ -214,9 +214,11 @@
 			$this->assertResultEqualToQuery(
 				$this->parentsTable->getChildren('children', 1),
 				"
-					SELECT children.*
+					SELECT parents.*, children.*
 					FROM children
-					WHERE parent_id = 1
+					LEFT JOIN parents
+						ON parents.parent_id = children.parent_id
+					WHERE children.parent_id = 1
 				"
 			);
 		}

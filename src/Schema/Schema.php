@@ -30,7 +30,9 @@
 
 		public function defineTable ($tableName)
 		{
-			$this->tables[$tableName] = new Table($this->connection, $this, $tableName);
+			if (! isset($this->tables[$tableName])) {
+				$this->tables[$tableName] = new Table($this->connection, $this, $tableName);
+			}
 
 			return $this->tables[$tableName];
 		}
@@ -40,12 +42,12 @@
 		{
 			if (isset($this->tables[$tableName])) {
 				return $this->tables[$tableName];
+
+			} else if ($force) {
+				return $this->defineTable($tableName);
+
 			} else {
-				if ($force) {
-					return $this->defineTable($tableName);
-				} else {
-					throw new NonexistentTableException('No such table ' . var_export($tableName, true));
-				}
+				throw new NonexistentTableException('No such table ' . var_export($tableName, true));
 			}
 		}
 	}
