@@ -8,12 +8,13 @@
 
 	namespace LiftKit\Database\Schema\Table;
 
+	use LiftKit\Database\Schema\Schema;
 	use LiftKit\Database\Connection\Connection as Database;
 	use LiftKit\Database\Result\Result as DatabaseResult;
 	use LiftKit\Database\Query\Query as DatabaseQuery;
 	use LiftKit\Database\Query\Condition as DatabaseQueryCondition;
 	use LiftKit\Database\Entity\Entity;
-	
+
 	use LiftKit\Database\Schema\Table\Relation\Relation;
 	use LiftKit\Database\Schema\Table\Relation\OneToOne;
 	use LiftKit\Database\Schema\Table\Relation\OneToMany;
@@ -36,6 +37,12 @@
 		 */
 		protected $database;
 
+
+		/**
+		 * @var Schema
+		 */
+		protected $schema;
+
 		/**
 		 * @var string|null
 		 */
@@ -56,9 +63,10 @@
 		 * @param Database    $database
 		 * @param string|null $table
 		 */
-		public function __construct (Database $database, $table)
+		public function __construct (Database $database, Schema $schema, $table)
 		{
 			$this->database = $database;
+			$this->schema   = $schema;
 			$this->table    = $table;
 		}
 
@@ -87,7 +95,6 @@
 
 		/**
 		 * @return string
-		 * @deprecated
 		 */
 		public function getPrimaryKey ()
 		{
@@ -126,7 +133,7 @@
 
 			$this->relations[$relationIdentifier] = new OneToOne(
 				$this,
-				$this->createTable($relatedTable),
+				$this->schema->getTable($relatedTable, true),
 				$key,
 				$relatedKey
 			);
@@ -156,7 +163,7 @@
 
 			$this->relations[$relationIdentifier] = new OneToMany(
 				$this,
-				$this->createTable($relatedTable),
+				$this->schema->getTable($relatedTable, true),
 				$key,
 				$relatedKey
 			);
@@ -186,7 +193,7 @@
 
 			$this->relations[$relationIdentifier] = new ManyToOne(
 				$this,
-				$this->createTable($relatedTable),
+				$this->schema->getTable($relatedTable, true),
 				$key,
 				$relatedKey
 			);
@@ -217,8 +224,8 @@
 
 			$this->relations[$relationIdentifier] = new ManyToMany(
 				$this,
-				$this->createTable($relatedTable),
-				$this->createTable($relationalTable),
+				$this->schema->getTable($relatedTable, true),
+				$this->schema->getTable($relationalTable, true),
 				$key,
 				$relatedKey
 			);
@@ -404,34 +411,24 @@
 			$query    = $this->database->createQuery();
 
 			if ($relation instanceof OneToMany) {
-				$query->select()
-					->fields(array('*'))
-					->from($relation->getRelatedTable())
-					->where(
-						$this->database->createCondition()
-							->equal($relation->getKey(), $id)
-					);
+				$query->whereEqual($relation->getKey(), $id);
+
 			} else if ($relation instanceof ManyToMany) {
-				$query->select()
-					->fields(array('*'))
-					->from($relation->getRelationalTable())
-					->leftJoinUsing(
-						$relation->getRelatedTable(),
-						$relation->getRelatedKey()
+				$query->addField($relation->getRelationalTable() . '.*')
+					->leftJoinEqual(
+						$relation->getRelationalTable(),
+						$relation->getRelationalTable() . '.' .$relation->getRelatedKey(),
+						$relation->getRelatedTable() . '.' . $relation->getRelatedKey()
 					)
-					->where(
-						$this->database->createCondition()
-							->equal($relation->getRelationalTable() . '.' . $relation->getKey(), $id)
-					);
+					->whereEqual($relation->getRelationalTable() . '.' . $relation->getKey(), $id);
+
 			} else {
 				throw new RelationException('Invalid relation type `' . gettype($relation) . '`');
 			}
 
-			if (!is_null($query)) {
-				$query->composeWith($inputQuery);
-			}
+			$query->composeWith($inputQuery);
 
-			return $query->execute();
+			return $relation->getRelatedTableObject()->getRows($query);
 		}
 
 
@@ -447,8 +444,10 @@
 		{
 			$relation = $this->getRelation($relationIdentifier);
 
-			$query = $this->database->createQuery()
-				->whereEqual($this->database->primaryKey($relation->getRelatedTable()), $childId);
+			$query = $this->database->createQuery()->whereEqual(
+				$this->database->primaryKey($relation->getRelatedTable()),
+				$childId
+			);
 
 			return $this->getChildren($relationIdentifier, $id, $query)->fetchRow();
 		}
@@ -497,15 +496,15 @@
 					->set($row)
 					->execute();
 
-				$relation = array(
+				$data = array(
 					$foreignKey => $id,
-					$this->database->getPrimaryKey($relation->getRelatedTable()) => $childId,
+					$this->database->primaryKey($relation->getRelatedTable()) => $childId,
 				);
 
 				$this->database->createQuery()
 					->insert()
 					->into($relation->getRelationalTable())
-					->set($relation)
+					->set($data)
 					->execute();
 
 				return $childId;
@@ -825,19 +824,10 @@
 			$row = $this->getRow($id);
 
 			$query = $this->database->createQuery()
-				->select()
-				->fields(array('*'))
-				->from($relation->getRelatedTable())
-				->where(
-					$this->database->createCondition()
-						->equal($relation->getKey(), $row[$relation->getRelatedKey()])
-				);
+				->whereEqual($relation->getKey(), $row[$relation->getRelatedKey()])
+				->composeWith($inputQuery);
 
-			if (!is_null($inputQuery)) {
-				$query->composeWith($inputQuery);
-			}
-
-			return $query->execute()->fetchRow();
+			return $relation->getRelatedTableObject()->getRows($query)->fetchRow();
 		}
 
 
@@ -857,7 +847,7 @@
 		/**
 		 * @param $relationIdentifier
 		 *
-		 * @return array
+		 * @return Relation
 		 */
 		protected function getRelation ($relationIdentifier)
 		{
@@ -897,7 +887,7 @@
 
 
 		/**
-		 * @return array[]
+		 * @return Relation[]
 		 */
 		protected function getSingleParentRelations ()
 		{
@@ -910,12 +900,6 @@
 			}
 
 			return $tables;
-		}
-		
-		
-		protected function createTable ($tableName)
-		{
-			return new self($this->database, $tableName);
 		}
 	}
 

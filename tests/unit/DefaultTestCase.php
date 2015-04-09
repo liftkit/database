@@ -76,8 +76,8 @@
 		protected function assertRowEqualToQuery ($row, $query)
 		{
 			$this->assertCommonFieldsMatch(
-				$row,
-				self::$pdo->query($query)->fetch(PDO::FETCH_ASSOC)
+				self::$pdo->query($query)->fetch(PDO::FETCH_ASSOC),
+				$row
 			);
 		}
 
@@ -85,8 +85,8 @@
 		protected function assertResultEqualToQuery (Result $result, $query)
 		{
 			$this->assertTablesEqual(
-				$this->createTableFromResult($result),
-				$this->createTableFromQuery($query)
+				$this->createTableFromQuery($query),
+				$this->createTableFromResult($result)
 			);
 		}
 

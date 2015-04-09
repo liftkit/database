@@ -25,6 +25,7 @@
 
 			foreach ($split as &$segment) {
 				if ($segment != '*') {
+					$segment = str_replace('`', '``', $segment);
 					$segment = '`' . $segment . '`';
 				}
 			}

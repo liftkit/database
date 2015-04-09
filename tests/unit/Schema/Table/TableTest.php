@@ -7,6 +7,7 @@
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Schema\Table\Table;
+	use LiftKit\Database\Schema\Schema;
 	use LiftKit\Database\Query\Query;
 
 	use LiftKit\Tests\Unit\Database\DefaultTestCase;
@@ -31,6 +32,9 @@
 		 * @var Connection
 		 */
 		protected $connection;
+
+
+		protected $schema;
 
 
 		/**
@@ -63,15 +67,17 @@
 				self::$pdo
 			);
 
-			$this->parentsTable = new Table($this->connection, 'parents');
-			$this->parentsTable->oneToMany('children')
+			$this->schema = new Schema($this->connection);
+
+			$this->parentsTable = $this->schema->defineTable('parents')
+				->oneToMany('children')
 				->manyToMany('friends', 'parent_friends');
 
-			$this->childrenTable = new Table($this->connection, 'children');
-			$this->childrenTable->manyToOne('parents');
+			$this->childrenTable = $this->schema->defineTable('children')
+				->manyToOne('parents');
 
-			$this->friendsTable = new Table($this->connection, 'friends');
-			$this->friendsTable->manyToMany('parents', 'parent_friends', 'parent_id', 'friend_id');
+			$this->friendsTable = $this->schema->defineTable('friends')
+				->manyToMany('parents', 'parent_friends', 'parent_id', 'friend_id');
 		}
 
 
@@ -221,9 +227,9 @@
 			$this->assertResultEqualToQuery(
 				$this->parentsTable->getChildren('friends', 1),
 				"
-					SELECT *
+					SELECT friends.*, parent_friends.*
 					FROM parent_friends
-					LEFT JOIN friends USING(friend_id)
+					LEFT JOIN friends ON parent_friends.friend_id = friends.friend_id
 					WHERE parent_friends.parent_id = 1
 				"
 			);
@@ -425,7 +431,7 @@
 
 			$this->parentsTable->setChildren('friends', 1, $children, true, false);
 
-			$newChildren = $this->parentsTable->getChildren('friends', 1, $this->connection->createQuery()->orderBy('friend_id'))->fetchAll();
+			$newChildren = $this->parentsTable->getChildren('friends', 1, $this->connection->createQuery()->orderBy('friends.friend_id'))->fetchAll();
 
 			foreach ($newChildren as $index => $child) {
 				$this->assertCommonFieldsMatch($child->toArray(), $children[$index]);
@@ -448,7 +454,7 @@
 
 			$this->parentsTable->setChildren('friends', 1, $children, true, true);
 
-			$newChildren = $this->parentsTable->getChildren('friends', 1, $this->connection->createQuery()->orderBy('friend_id'))->fetchAll();
+			$newChildren = $this->parentsTable->getChildren('friends', 1, $this->connection->createQuery()->orderBy('friends.friend_id'))->fetchAll();
 
 			foreach ($newChildren as $index => $child) {
 				$this->assertCommonFieldsMatch($child->toArray(), $children[$index]);

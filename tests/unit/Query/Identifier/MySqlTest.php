@@ -20,6 +20,14 @@
 		}
 
 
+		public function testIdentifierWithQuote ()
+		{
+			$identifier = new Identifier('tes`t');
+
+			$this->assertEquals($identifier, '`tes``t`');
+		}
+
+
 		public function testMultiSegment ()
 		{
 			$identifier = new Identifier('segment1.segment2.segment3');
