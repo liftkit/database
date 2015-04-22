@@ -130,6 +130,7 @@
 
 		protected $type;
 		protected $table;
+		protected $alias;
 
 		protected $fields = array();
 		protected $data   = array();
@@ -365,7 +366,13 @@
 
 			if ($this->type == self::QUERY_TYPE_SELECT) {
 				$queryLines[] = "SELECT " . $this->processFields();
-				$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
+
+				if ($this->alias) {
+					$queryLines[] = "FROM " . $this->filterIdentifier($this->table) . " AS " . $this->filterIdentifier($this->alias);
+				} else {
+					$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
+				}
+
 				$queryLines[] = $this->processJoins();
 				$queryLines[] = $this->processWhere();
 				$queryLines[] = $this->processGroupBy();
@@ -570,17 +577,18 @@
 		}
 
 
-		public function table ($table)
+		public function table ($table, $alias = null)
 		{
 			$this->table = $table;
+			$this->alias = $alias;
 
 			return $this;
 		}
 
 
-		public function from ($table)
+		public function from ($table, $alias = null)
 		{
-			$this->table($table);
+			$this->table($table, $alias);
 
 			return $this;
 		}

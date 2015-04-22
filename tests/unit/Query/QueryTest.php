@@ -26,6 +26,22 @@
 		}
 
 
+		public function testAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children` AS `alias`
+				")
+			);
+		}
+
+
 		public function testWhereCondition ()
 		{
 			$this->query->select()
