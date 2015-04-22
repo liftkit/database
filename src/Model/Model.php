@@ -11,12 +11,13 @@
 	namespace LiftKit\Database\Model;;
 
 	use LiftKit\Database\Connection\Connection;
-	
+
 	use LiftKit\Database\Schema\Schema;
-	use LiftKit\Database\Table\Table;
-	
+	use LiftKit\Database\Schema\Table\Table;
+
 	use LiftKit\Database\Query\Query;
 	use LiftKit\Database\Query\Condition\Condition;
+	use LiftKit\Database\Query\Raw\Raw;
 
 
 	/**
@@ -76,6 +77,17 @@
 
 
 		/**
+		 * @param $raw
+		 *
+		 * @return Raw
+		 */
+		protected function createRaw ($raw)
+		{
+			return $this->database->createRaw($raw);
+		}
+
+
+		/**
 		 * @param $identifier
 		 *
 		 * @return string
@@ -84,8 +96,8 @@
 		{
 			return $this->database->quoteIdentifier($identifier);
 		}
-		
-		
+
+
 		/**
 		 * @param string $tableName
 		 *
