@@ -294,6 +294,31 @@
 		}
 
 
+		public function testLeftJoinAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->leftJoin(
+					'parents',
+					$this->condition->equal(
+						'children.parent_id',
+						$this->connection->quoteIdentifier('alias.parent_id')
+					),
+					'alias'
+				);
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					LEFT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+				")
+			);
+		}
+
+
 		public function testLeftJoinEqual ()
 		{
 			$this->query->select()
@@ -312,6 +337,24 @@
 		}
 
 
+		public function testLeftJoinEqualAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->leftJoinEqual('parents', 'children.parent_id', 'alias.parent_id', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					LEFT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+				")
+			);
+		}
+
+
 		public function testLeftJoinUsing ()
 		{
 			$this->query->select()
@@ -325,6 +368,24 @@
 					SELECT `child_id`, `child_name`
 					FROM `children`
 					LEFT JOIN `parents` USING (`parent_id`)
+				")
+			);
+		}
+
+
+		public function testLeftJoinUsingAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->leftJoinUsing('parents', 'parent_id', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					LEFT JOIN `parents` AS `alias` USING (`parent_id`)
 				")
 			);
 		}
@@ -354,6 +415,31 @@
 		}
 
 
+		public function testRightJoinAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->rightJoin(
+					'parents',
+					$this->condition->equal(
+						'children.parent_id',
+						$this->connection->quoteIdentifier('alias.parent_id')
+					),
+					'alias'
+				);
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					RIGHT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+				")
+			);
+		}
+
+
 		public function testRightJoinEqual ()
 		{
 			$this->query->select()
@@ -372,6 +458,24 @@
 		}
 
 
+		public function testRightJoinEqualAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->rightJoinEqual('parents', 'children.parent_id', 'alias.parent_id', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					RIGHT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+				")
+			);
+		}
+
+
 		public function testRightJoinUsing ()
 		{
 			$this->query->select()
@@ -385,6 +489,24 @@
 					SELECT `child_id`, `child_name`
 					FROM `children`
 					RIGHT JOIN `parents` USING (`parent_id`)
+				")
+			);
+		}
+
+
+		public function testRightJoinUsingAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->rightJoinUsing('parents', 'parent_id', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					RIGHT JOIN `parents` AS `alias` USING (`parent_id`)
 				")
 			);
 		}
@@ -414,6 +536,31 @@
 		}
 
 
+		public function testInnerJoinAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->innerJoin(
+					'parents',
+					$this->condition->equal(
+						'children.parent_id',
+						$this->connection->quoteIdentifier('alias.parent_id')
+					),
+					'alias'
+				);
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					INNER JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+				")
+			);
+		}
+
+
 		public function testInnerJoinEqual ()
 		{
 			$this->query->select()
@@ -432,6 +579,24 @@
 		}
 
 
+		public function testInnerJoinEqualAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->innerJoinEqual('parents', 'children.parent_id', 'alias.parent_id', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					INNER JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+				")
+			);
+		}
+
+
 		public function testInnerJoinUsing ()
 		{
 			$this->query->select()
@@ -445,6 +610,24 @@
 					SELECT `child_id`, `child_name`
 					FROM `children`
 					INNER JOIN `parents` USING (`parent_id`)
+				")
+			);
+		}
+
+
+		public function testInnerJoinUsingAlias ()
+		{
+			$this->query->select()
+				->fields(array('child_id', 'child_name'))
+				->from('children')
+				->innerJoinUsing('parents', 'parent_id', 'alias');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->query),
+				$this->normalizeSql("
+					SELECT `child_id`, `child_name`
+					FROM `children`
+					INNER JOIN `parents` AS `alias` USING (`parent_id`)
 				")
 			);
 		}
@@ -778,10 +961,10 @@
 		{
 			$this->query->from('children');
 			$this->assertEquals($this->query->getTable(), 'children');
-			
+
 			$this->query->into('parents');
 			$this->assertEquals($this->query->getTable(), 'parents');
-			
+
 			$this->query->table('friends');
 			$this->assertEquals($this->query->getTable(), 'friends');
 		}

@@ -594,126 +594,135 @@
 		}
 
 
-		public function leftJoin ($table, $condition)
+		public function leftJoin ($table, $condition, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'LEFT JOIN',
 				$table,
 				'ON',
-				$condition
+				$condition,
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function leftJoinUsing ($table, $field)
+		public function leftJoinUsing ($table, $field, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'LEFT JOIN',
 				$table,
 				'USING',
-				$this->filterIdentifier($field)
+				$this->filterIdentifier($field),
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function leftJoinEqual ($table, $left, $right)
+		public function leftJoinEqual ($table, $left, $right, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'LEFT JOIN',
 				$table,
 				'ON',
-				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right)
+				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function rightJoin ($table, $condition)
+		public function rightJoin ($table, $condition, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'RIGHT JOIN',
 				$table,
 				'ON',
-				$condition
+				$condition,
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function rightJoinUsing ($table, $field)
+		public function rightJoinUsing ($table, $field, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'RIGHT JOIN',
 				$table,
 				'USING',
-				$this->filterIdentifier($field)
+				$this->filterIdentifier($field),
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function rightJoinEqual ($table, $left, $right)
+		public function rightJoinEqual ($table, $left, $right, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'RIGHT JOIN',
 				$table,
 				'ON',
-				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right)
+				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function innerJoin ($table, $condition)
+		public function innerJoin ($table, $condition, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'INNER JOIN',
 				$table,
 				'ON',
-				$condition
+				$condition,
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function innerJoinUsing ($table, $field)
+		public function innerJoinUsing ($table, $field, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'INNER JOIN',
 				$table,
 				'USING',
-				$this->filterIdentifier($field)
+				$this->filterIdentifier($field),
+				$alias
 			);
 
 			return $this;
 		}
 
 
-		public function innerJoinEqual ($table, $left, $right)
+		public function innerJoinEqual ($table, $left, $right, $alias = null)
 		{
 			$this->joins[] = new Join(
 				$this->database,
 				'INNER JOIN',
 				$table,
 				'ON',
-				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right)
+				$this->filterIdentifier($left) . ' = ' . $this->filterIdentifier($right),
+				$alias
 			);
 
 			return $this;
