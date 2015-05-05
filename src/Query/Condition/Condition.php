@@ -578,6 +578,8 @@
 				}
 
 				$this->condition($condition);
+			} else {
+				$this->raw('TRUE');
 			}
 		}
 

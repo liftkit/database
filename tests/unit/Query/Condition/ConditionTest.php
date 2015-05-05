@@ -473,5 +473,20 @@
 		}
 
 
+		public function testSearchEmpty ()
+		{
+			$this->condition->search(array('field1', 'field2', 'field3'), '');
+
+			$this->assertEquals(
+				$this->normalizeSql($this->condition),
+				$this->normalizeSql(
+					"(
+						TRUE
+					)"
+				)
+			);
+		}
+
+
 
 	}
