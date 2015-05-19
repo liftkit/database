@@ -81,12 +81,6 @@
 		}
 
 
-		public function __destruct ()
-		{
-			$this->close();
-		}
-
-
 		/**
 		 * query function.
 		 *
@@ -134,12 +128,6 @@
 					return $this->insertId() ?: $databaseResult;
 				}
 			}
-		}
-
-
-		public function close ()
-		{
-			$this->database = null;
 		}
 
 
