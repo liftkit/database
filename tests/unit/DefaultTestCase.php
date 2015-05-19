@@ -42,11 +42,13 @@
 			$this->cache = new Cache;
 			$this->container = new Container;
 
-			$this->connection = new Connection(
-				$this->container,
-				$this->cache,
-				self::$pdo
-			);
+			if (! $this->connection) {
+				$this->connection = new Connection(
+					$this->container,
+					$this->cache,
+					self::$pdo
+				);
+			}
 		}
 
 
