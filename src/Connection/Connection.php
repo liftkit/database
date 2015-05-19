@@ -81,7 +81,7 @@
 		}
 
 
-		public function __destroy ()
+		public function __destruct ()
 		{
 			$this->close();
 		}
