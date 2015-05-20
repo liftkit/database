@@ -131,11 +131,12 @@ $results = $query->select('field1', 'field2')
 
 ### More complicated select query
 
-Note that the method `$connection->quoteIdentifier` is called on the right parameters.
+Note that the method `$connection->quoteIdentifier()` is called on the right parameters.
 That's because the right parameter is expected to be a value. If it is instead
 a SQL identifier, it must be quoted.
 
 This example shows the query with MySQL style identifier quotes to illustrate the point.
+Note the difference between the `JOIN` conditions and the `WHERE` conditions.
 
 ```php
 use LiftKit\Database\Query\Condition\Condition;
