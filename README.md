@@ -7,6 +7,7 @@ Let's jump right in to some examples.
 ### Establish a connection
 
 ```php
+use LiftKit\Database\Connection\MySql;
 use LiftKit\DependencyInjection\Container\Container;
 use LiftKit\Database\Cache\Cache;
 use PDO;
