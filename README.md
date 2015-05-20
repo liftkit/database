@@ -238,7 +238,8 @@ $query->delete()
 Subqueries can be substituted pretty much anywhere a value or identifier can be. 
 
 Note: This is also an example of how to use raw SQL instead of escaped values in your queries
-using the method `createRaw`.
+using the method `$connection->createRaw()`. Select arguments, like the left had side of conditions, 
+will be quoted as an identifier unless otherwise specified.
 
 ```php
 // SELECT *
