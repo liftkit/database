@@ -246,7 +246,7 @@ function getAllTblRows ()
 }
 ```
 
-Note you need another query which select only record which are active from `tbl`.
+Now you need another query which select only records which are active from `tbl`.
 
 ```php
 // SELECT *
