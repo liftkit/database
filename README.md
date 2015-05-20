@@ -72,7 +72,11 @@ $connection->query(
 ```php
 use LiftKit\Database\Query\Query;
 
+// Manually
 $query = new Query($connection);
+
+// Using utility method
+$query = $connection->createQuery();
 ```
 
 ### Simple select query
