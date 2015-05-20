@@ -4,6 +4,8 @@
 
 Using composer require: `"liftkit/database": "~2.6"`
 
+There's a lot of functionality that isn't directly documented here. A lot of it can be inferred from what is presented, and much of the rest can be inferred from method names and signatures. Don't be afraid to use the classes themselves as documentation!
+
 Let's jump right in to some examples.
 
 ## Connection
@@ -273,4 +275,99 @@ function getActiveTblRows ()
   return getAllTblRows($query);
 }
 ```
+
+## Table objects
+
+Table objects are meant to reduce the boilerplate you need to place in
+your query builder queries.
+
+### Fetching multiple rows
+
+```php
+use LiftKit\Database\Schema\Schema;
+use LiftKit\Database\Schema\Table\Table;
+
+// We'll get back to schemas in a moment
+
+$table = new Table(
+	$connection,
+	new Schema($connection),
+	'tbl'
+);
+
+// SELECT *
+// FROM tbl
+
+$result = $tbl->getRows();
+```
+
+### Fetching multiple rows with composed query
+
+```php
+// SELECT *
+// FROM tbl
+// WHERE active = 1
+
+$result = $table->getRows(
+	$connection->createQuery()
+		->whereEqual('active', 1)
+);
+```
+
+### Fetching a single row
+
+```php
+// SELECT *
+// FROM tbl
+// WHERE id = 1
+
+$row = $table->getRow(1);
+
+// 'val1'
+echo $row['field1'];
+
+// 'val2'
+echo $row['field2'];
+```
+
+### Inserting a new row
+
+````php
+// INSERT INTO tbl
+// SET field1 = 'val1', field2 = 'val2'
+
+$id = $table->insertRow(
+	[
+		'field1' => 'val1',
+		'field2' => 'val2',
+	]
+);
+```
+
+### Updating a row
+
+```php
+
+// UPDATE tbl
+// SET field1 = 'val1', field2 = 'val2'
+// WHERE id = 1
+
+$table->updateRow(
+	[
+		'id'     => 1,
+		'field1' => 'val1',
+		'field2' => 'val2',
+	]
+);
+```
+
+### Deleting a row
+
+```php
+// DELETE FROM tbl
+// WHERE id = 1
+
+$table->deleteRow(1);
+```
+
 More info on table objects, relations, and entities coming soon!
