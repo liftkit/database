@@ -74,10 +74,9 @@ $connection->query(
 ```php
 use LiftKit\Database\Query\Query;
 
-// Manually
-$query = new Query($connection);
-
-// Using utility method
+/**
+ * @var Query $query
+ */
 $query = $connection->createQuery();
 ```
 
