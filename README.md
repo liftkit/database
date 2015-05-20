@@ -53,7 +53,7 @@ $connection->query(
 );
 ```
 
-# Select query result objects
+# Result objects
 
 ### Loop through results
 
@@ -70,9 +70,9 @@ $results = $connection->query(
 	"
 );
 
-foreach ($results as $result) {
-  echo 'column "name" = ' . $result['name'] . PHP_EOL;
-  echo 'column "id" = ' . $result['id'] . PHP_EOL;
+foreach ($results as $row) {
+  echo 'column "name" = ' . $row['name'] . PHP_EOL;
+  echo 'column "id" = ' . $row['id'] . PHP_EOL;
 }
 ```
 
@@ -280,9 +280,11 @@ function getAllTblRows ()
     ->from('tbl')
     ->execute();
 }
+
+$results = getActiveTblRows();
 ```
 
-Now you need another query which select only records which are active from `tbl`.
+Now you need another query which select only records which are active from `tbl`. Notice the additions to `getAllTblRows`.
 
 ```php
 // SELECT *
@@ -310,6 +312,8 @@ function getActiveTblRows ()
   
   return getAllTblRows($query);
 }
+
+$results = getActiveTblRows();
 ```
 
 ## Table objects
@@ -334,7 +338,7 @@ $table = new Table(
 // SELECT *
 // FROM tbl
 
-$result = $tbl->getRows();
+$results = $tbl->getRows();
 ```
 
 ### Fetching multiple rows with composed query
@@ -344,7 +348,7 @@ $result = $tbl->getRows();
 // FROM tbl
 // WHERE active = 1
 
-$result = $table->getRows(
+$results = $table->getRows(
 	$connection->createQuery()
 		->whereEqual('active', 1)
 );
