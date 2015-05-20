@@ -160,6 +160,32 @@
 		}
 
 
+		public function testSetCastCallback ()
+		{
+			$this->container->setRule(
+				'StubEntity',
+				function ($container, $data)
+				{
+					return new StubEntity($data);
+				}
+			);
+
+			$sql = 'SELECT *
+					FROM children';
+
+			$entity = $this->connection->query($sql)
+				->setCastCallback(
+					function ($data)
+					{
+						return $this->container->getObject('StubEntity', [$data]);
+					}
+				)
+				->fetchRow();
+
+			$this->assertTrue($entity instanceof StubEntity);
+		}
+
+
 		public function testGetQueryString ()
 		{
 			$sql = "SELECT * FROM children";

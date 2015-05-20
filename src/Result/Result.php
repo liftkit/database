@@ -188,6 +188,14 @@
 		}
 
 
+		public function setCastCallback (callable $callback)
+		{
+			$this->castCallback = $callback;
+
+			return $this;
+		}
+
+
 		protected function cast($data)
 		{
 			if (is_null($this->castCallback)) {
