@@ -36,20 +36,6 @@ $results = $connection->query(
 );
 ```
 
-### Loop through results
-
-```php
-// NOTE: 
-// Results are not loaded into memory. Instead they are
-// wrapped by an object of the class
-// \LiftKit\Database\Result\Result
-
-foreach ($results as $result) {
-  echo 'column "name" = ' . $result['name'] . PHP_EOL;
-  echo 'column "id" = ' . $result['id'] . PHP_EOL;
-}
-```
-
 ### Using placeholders
 
 ```php
@@ -65,6 +51,49 @@ $connection->query(
     'val2',
   ]
 );
+```
+
+# Select query result objects
+
+### Loop through results
+
+```php
+// NOTE: 
+// Results are not loaded into memory. Instead they are
+// wrapped by an object of the class
+// \LiftKit\Database\Result\Result
+
+foreach ($results as $result) {
+  echo 'column "name" = ' . $result['name'] . PHP_EOL;
+  echo 'column "id" = ' . $result['id'] . PHP_EOL;
+}
+```
+
+### Fetch a single column as an array
+
+```php
+foreach ($results->fetchColumn('id') as $id) {
+	echo $id . PHP_EOL;
+}
+// '1'
+// '2'
+// ...
+```
+
+### Fetch all rows as an array of entities
+
+```php
+foreach ($results->fetchAll() as $row) {
+	// Do something with $row['column']
+}
+```
+
+### Fetch all rows as an array of associative arrays
+
+```php
+foreach ($results->flatten() as $row) {
+	// Do something with $row['column']
+}
 ```
 
 ## Query builder
