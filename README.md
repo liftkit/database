@@ -243,7 +243,7 @@ using the method `createRaw`.
 // WHERE
 // ( SELECT COUNT(*)
 //   FROM tbl2
-//   WHERE tbl1.id = tbl2.tbl2_id
+//   WHERE tbl1.id = tbl2.tbl1_id
 // ) = 1
 
 $results = $query->select('*')
