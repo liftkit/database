@@ -4,8 +4,6 @@
 
 Using composer require: `"liftkit/database": "~2.6"`
 
-There's a lot of functionality that isn't directly documented here. A lot of it can be inferred from what is presented, and much of the rest can be inferred from method names and signatures. Don't be afraid to use the classes and tests themselves as supplemental documentation!
-
 Let's jump right in to some examples.
 
 ## Connection
