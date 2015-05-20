@@ -188,7 +188,7 @@
 		}
 
 
-		public function setCastCallback (callable $callback)
+		public function setCastCallback (callable $callback = null)
 		{
 			$this->castCallback = $callback;
 
