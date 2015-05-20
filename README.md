@@ -115,20 +115,19 @@ use LiftKit\Database\Query\Condition\Condition;
 // HAVING tbl.field1 < 1
 // ORDER BY tbl.field5 ASC, tbl.field6 DESC
 
-$joinCondition = new Condition($connection);
-
 $results = $query->select('field1', 'field2')
   ->from('tbl')
   ->leftJoin(
     'other_tbl',
-    $joinCondition->equal(
-      'tbl.field1',
-      $connection->quoteIdentifier('other_tbl.field1')
-    )
-    ->orGreaterThan(
-      'tbl.field2',
-      $connection->quoteIdentifier('other_tbl.field2')
-    )
+    $connection->createCondition()
+    	->equal(
+     		'tbl.field1',
+     		$connection->quoteIdentifier('other_tbl.field1')
+    	)
+    	->orGreaterThan(
+      	'tbl.field2',
+      	$connection->quoteIdentifier('other_tbl.field2')
+    	)
   )
   ->whereEqual('tbl1.field1', 'val1')
   ->orWhereEqual('other_tbl.field2', 'val2')
@@ -204,7 +203,7 @@ Note: This is also an example of how to use raw SQL instead of escaped values in
 using the method `createRaw`.
 
 ```php
-$subQuery = new Query($connection);
+$subQuery = $connection->createQuery();
 
 // SELECT *
 // FROM tbl1
@@ -238,7 +237,7 @@ Let's say you have a function that returns all of the rows from `tbl`.
 
 function getAllTblRows ()
 {
-  $query = new Query($connection);
+  $query = $connection->createQuery();
   
   return $query->select('*')
     ->from('tbl')
@@ -254,7 +253,7 @@ Now you need another query which select only records which are active from `tbl`
 
 function getAllTblRows (Query $inputQuery = null)
 {
-  $query = new Query($connection);
+  $query = $connection->createQuery();
   
   return $query->select('*')
     ->from('tbl')
@@ -268,7 +267,7 @@ function getAllTblRows (Query $inputQuery = null)
 
 function getActiveTblRows ()
 {
-  $query = new Query($connection);
+  $query = $connection->createQuery();
   
   $query->whereEqual('active', 1);
   
