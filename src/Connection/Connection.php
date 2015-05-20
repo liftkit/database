@@ -89,7 +89,7 @@
 		 *
 		 * @param string $query
 		 * @param array  $data (default: array())
-		 * @param string $entity (default: null)
+		 * @param string|callable $entity (default: null)
 		 *
 		 * @return DatabaseResult
 		 */
@@ -277,16 +277,29 @@
 
 		/**
 		 * @param PDOStatement $result
-		 * @param null|string  $entity
+		 * @param string|callable  $entity
 		 *
 		 * @return DatabaseResult
 		 */
 		protected function createResult (PDOStatement $result, $entity = null)
 		{
 			if ($result->columnCount()) {
-				return new DatabaseResult($result, $this->loader, $entity);
+				return new DatabaseResult($result, $this->transformEntity($entity));
 			} else {
 				return true;
+			}
+		}
+
+
+		protected function transformEntity ($entity)
+		{
+			if (is_null($entity) || is_callable($entity)) {
+				return $entity;
+			} else {
+				return function ($data) use ($entity)
+				{
+					return $this->loader->getObject($entity, [$data]);
+				};
 			}
 		}
 	}

@@ -27,11 +27,6 @@
 	class Result implements Countable, Iterator
 	{
 		/**
-		 * @var Container
-		 */
-		protected $container;
-
-		/**
 		 *
 		 * @var array
 		 */
@@ -43,9 +38,9 @@
 		protected $pdoStatement;
 
 		/**
-		 * @var string|null
+		 * @var callable
 		 */
-		protected $entityName;
+		protected $castCallback;
 
 		/**
 		 * @var int
@@ -53,11 +48,10 @@
 		protected $cursor = -1;
 
 
-		public function __construct (PDOStatement $pdoStatement, Container $container = null, $entityName = null)
+		public function __construct (PDOStatement $pdoStatement, callable $castCallback = null)
 		{
 			$this->pdoStatement = $pdoStatement;
-			$this->container = $container;
-			$this->entityName = $entityName;
+			$this->castCallback = $castCallback;
 		}
 
 
@@ -196,12 +190,12 @@
 
 		protected function cast($data)
 		{
-			if (is_null($this->entityName)) {
+			if (is_null($this->castCallback)) {
 				return new DatabaseRow($data);
 
 			} else {
-				return $this->container->getObject(
-					$this->entityName,
+				return call_user_func_array(
+					$this->castCallback,
 					array($data)
 				);
 			}
