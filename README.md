@@ -63,6 +63,13 @@ $connection->query(
 // wrapped by an object of the class
 // \LiftKit\Database\Result\Result
 
+$results = $connection->query(
+	"
+		SELECT *
+		FROM tbl
+	"
+);
+
 foreach ($results as $result) {
   echo 'column "name" = ' . $result['name'] . PHP_EOL;
   echo 'column "id" = ' . $result['id'] . PHP_EOL;
