@@ -6,6 +6,7 @@
 	use LiftKit\Database\Result\Result;
 	use LiftKit\Tests\Unit\Database\DefaultTestCase;
 	use LiftKit\Tests\Stub\Database\Entity\Entity as StubEntity;
+	use LiftKit\Database\Entity\Entity;
 	use PDO;
 
 
@@ -157,6 +158,10 @@
 			$entity = $this->connection->query($sql, array(), 'StubEntity')->fetchRow();
 
 			$this->assertTrue($entity instanceof StubEntity);
+
+			$entity = $this->connection->query($sql, array(), 'StubEntity')->setCastCallback(null)->fetchRow();
+
+			$this->assertTrue($entity instanceof Entity);
 		}
 
 
