@@ -145,7 +145,7 @@ use LiftKit\Database\Query\Condition\Condition;
 //  OR tbl.field2 > other_tbl.field2
 // )
 // WHERE tbl.field1 = 'val1'
-// OR other_tbl.field2 = 'val2'
+//    OR other_tbl.field2 = 'val2'
 // GROUP BY tbl.field3, tbl.field4
 // HAVING tbl.field1 < 1
 // ORDER BY tbl.field5 ASC, tbl.field6 DESC
