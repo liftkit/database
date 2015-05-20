@@ -135,20 +135,22 @@ Note that the method `$connection->quoteIdentifier` is called on the right param
 That's because the right parameter is expected to be a value. If it is instead
 a SQL identifier, it must be quoted.
 
+This example shows the query with MySQL style identifier quotes to illustrate the point.
+
 ```php
 use LiftKit\Database\Query\Condition\Condition;
 
-// SELECT field1, field2
-// FROM tbl
-// LEFT JOIN other_tbl ON (
-//  tbl.field1 = other_tbl.field1
-//  OR tbl.field2 > other_tbl.field2
+// SELECT `field1`, `field2`
+// FROM `tbl`
+// LEFT JOIN `other_tbl` ON (
+//  `tbl`.`field1` = `other_tbl`.`field1`
+//  OR `tbl`.`field2` > `other_tbl`.field2`
 // )
-// WHERE tbl.field1 = 'val1'
-//    OR other_tbl.field2 = 'val2'
-// GROUP BY tbl.field3, tbl.field4
-// HAVING tbl.field1 < 1
-// ORDER BY tbl.field5 ASC, tbl.field6 DESC
+// WHERE `tbl`.`field1` = 'val1'
+//    OR `other_tbl`.`field2` = 'val2'
+// GROUP BY `tbl`.`field3`, `tbl`.`field4`
+// HAVING `tbl`.`field1` < 1
+// ORDER BY `tbl`.`field5` ASC, `tbl`.`field6` DESC
 
 $results = $query->select('field1', 'field2')
   ->from('tbl')
