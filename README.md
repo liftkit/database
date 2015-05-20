@@ -1,5 +1,9 @@
 # LiftKit database library
 
+## Installation
+
+Using composer require: `"liftkit/database": "~2.6"`
+
 Let's jump right in to some examples.
 
 ## Connection
