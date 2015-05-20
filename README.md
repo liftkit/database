@@ -85,6 +85,10 @@ $results = $query->select('field1', 'field2')
 
 ### More complicated select query
 
+Note that the method `$connection->quoteIdentifier` is called on the right parameters.
+That's because the right parameter is expected to be a value. If it is instead
+a SQL identifier, it must be quoted.
+
 ```php
 use LiftKit\Database\Query\Condition\Condition;
 
@@ -180,4 +184,84 @@ $query->delete()
   ->execute();
 ```
 
+
+## Subqueries
+
+Subqueries can be substituted pretty much anywhere a value or identifier can be. 
+
+Note: This is also an example of how to use raw SQL instead of escaped values in your queries
+using the method `createRaw`.
+
+```php
+$subQuery = new Query($connection);
+
+// SELECT *
+// FROM tbl1
+// WHERE
+// ( SELECT COUNT(*)
+//   FROM tbl2
+//   WHERE tbl1.id = tbl2.tbl2_id
+// ) = 1
+
+$results = $query->select('*')
+  ->from('tbl1')
+  ->whereEqual(
+    $subQuery->select($connection->createRaw('COUNT(*)'))
+      ->from('tbl2')
+      ->whereEqual('tbl1.id', $connection->quoteIdentifier('tb2.tbl1_id'),
+    1
+  )
+  ->execute();
+```
+
+### Composing parts of queries
+
+This comes in hand for extracting away parts of queries you use often, while
+retaining the ability to combine them with other queries.
+
+Let's say you have a function that returns all of the rows from `tbl`.
+
+```php
+// SELECT *
+// FROM tbl
+
+function getAllTblRows ()
+{
+  $query = new Query($connection);
+  
+  return $query->select('*')
+    ->from('tbl')
+    ->execute();
+}
+```
+
+Note you need another query which select only record which are active from `tbl`.
+
+```php
+// SELECT *
+// FROM tbl
+
+function getAllTblRows (Query $inputQuery = null)
+{
+  $query = new Query($connection);
+  
+  return $query->select('*')
+    ->from('tbl')
+    ->composeWith($inputQuery)
+    ->execute();
+}
+
+// SELECT *
+// FROM tbl
+// WHERE active = 1
+
+function getActiveTblRows ()
+{
+  $query = new Query($connection);
+  
+  $query->whereEqual('active', 1);
+  
+  return getAllTblRows($query);
+}
+```
 More info on table objects, relations, and entities coming soon!
