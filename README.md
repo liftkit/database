@@ -125,8 +125,8 @@ $results = $query->select('field1', 'field2')
      		$connection->quoteIdentifier('other_tbl.field1')
     	)
     	->orGreaterThan(
-      	'tbl.field2',
-      	$connection->quoteIdentifier('other_tbl.field2')
+     		'tbl.field2',
+     		$connection->quoteIdentifier('other_tbl.field2')
     	)
   )
   ->whereEqual('tbl1.field1', 'val1')
@@ -203,8 +203,6 @@ Note: This is also an example of how to use raw SQL instead of escaped values in
 using the method `createRaw`.
 
 ```php
-$subQuery = $connection->createQuery();
-
 // SELECT *
 // FROM tbl1
 // WHERE
@@ -216,7 +214,8 @@ $subQuery = $connection->createQuery();
 $results = $query->select('*')
   ->from('tbl1')
   ->whereEqual(
-    $subQuery->select($connection->createRaw('COUNT(*)'))
+    $connection->createQuery()
+    	->select($connection->createRaw('COUNT(*)'))
       ->from('tbl2')
       ->whereEqual('tbl1.id', $connection->quoteIdentifier('tb2.tbl1_id'),
     1
