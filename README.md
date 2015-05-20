@@ -275,9 +275,8 @@ Let's say you have a function that returns all of the rows from `tbl`.
 ```php
 function getAllTblRows ()
 {
-  $query = $connection->createQuery();
-  
-  return $query->select('*')
+  return $connection->createQuery()
+  	->select('*')
     ->from('tbl')
     ->execute();
 }
@@ -293,9 +292,8 @@ Now you need another query which select only records which are active from `tbl`
 ```php
 function getAllTblRows (Query $inputQuery = null)
 {
-  $query = $connection->createQuery();
-  
-  return $query->select('*')
+  return $connection->createQuery()
+  	->select('*')
     ->from('tbl')
     ->composeWith($inputQuery)
     ->execute();
@@ -303,9 +301,8 @@ function getAllTblRows (Query $inputQuery = null)
 
 function getActiveTblRows ()
 {
-  $query = $connection->createQuery();
-  
-  $query->whereEqual('active', 1);
+  $query = $connection->createQuery()
+  	->whereEqual('active', 1);
   
   return getAllTblRows($query);
 }
