@@ -216,7 +216,10 @@ $results = $query->select('*')
     $connection->createQuery()
     	->select($connection->createRaw('COUNT(*)'))
       ->from('tbl2')
-      ->whereEqual('tbl1.id', $connection->quoteIdentifier('tb2.tbl1_id'),
+      ->whereEqual(
+      	'tbl1.id', 
+      	$connection->quoteIdentifier('tb2.tbl1_id')
+      ),
     1
   )
   ->execute();
