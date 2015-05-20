@@ -269,9 +269,6 @@ retaining the ability to combine them with other queries.
 Let's say you have a function that returns all of the rows from `tbl`.
 
 ```php
-// SELECT *
-// FROM tbl
-
 function getAllTblRows ()
 {
   $query = $connection->createQuery();
@@ -281,15 +278,15 @@ function getAllTblRows ()
     ->execute();
 }
 
+// SELECT *
+// FROM tbl
+
 $results = getActiveTblRows();
 ```
 
 Now you need another query which select only records which are active from `tbl`. Notice the additions to `getAllTblRows`.
 
 ```php
-// SELECT *
-// FROM tbl
-
 function getAllTblRows (Query $inputQuery = null)
 {
   $query = $connection->createQuery();
@@ -300,10 +297,6 @@ function getAllTblRows (Query $inputQuery = null)
     ->execute();
 }
 
-// SELECT *
-// FROM tbl
-// WHERE active = 1
-
 function getActiveTblRows ()
 {
   $query = $connection->createQuery();
@@ -312,6 +305,10 @@ function getActiveTblRows ()
   
   return getAllTblRows($query);
 }
+
+// SELECT *
+// FROM tbl
+// WHERE active = 1
 
 $results = getActiveTblRows();
 ```
