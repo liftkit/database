@@ -250,7 +250,7 @@ $results = $query->select('*')
   ->from('tbl1')
   ->whereEqual(
     $connection->createQuery()
-    	->select($connection->createRaw('COUNT(*)'))
+      ->select($connection->createRaw('COUNT(*)'))
       ->from('tbl2')
       ->whereEqual(
       	'tbl1.id', 
