@@ -356,6 +356,7 @@ $results = $table->getRows(
 // SELECT *
 // FROM tbl
 // WHERE id = 1
+// LIMIT 1
 
 $row = $table->getRow(1);
 
@@ -381,6 +382,8 @@ $id = $table->insertRow(
 ```
 
 ### Updating a row
+
+NOTE: The library will auto-detect the primary key column and create an equal condition on that column.
 
 ```php
 
