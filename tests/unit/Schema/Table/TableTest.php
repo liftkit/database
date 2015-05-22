@@ -419,6 +419,29 @@
 		}
 
 
+		public function testSetChildrenOneToManyWithNonexistentFields ()
+		{
+			$children = array(
+				array(
+					'child_id' => '2',
+					'child_name' => 'bobby',
+					'child_url' => 'http://google.com',
+				),
+				array(
+					'child_name' => 'new_child',
+				)
+			);
+
+			$this->parentsTable->setChildren('children', 1, $children);
+
+			$newChildren = $this->parentsTable->getChildren('children', 1, $this->connection->createQuery()->orderBy('child_id'))->fetchAll();
+
+			foreach ($newChildren as $index => $child) {
+				$this->assertCommonFieldsMatch($child->toArray(), $children[$index]);
+			}
+		}
+
+
 		public function testSetChildrenManyToMany ()
 		{
 			$children = array(

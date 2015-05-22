@@ -674,7 +674,7 @@
 		 *
 		 * @throws RelationException
 		 */
-		public function setChildren ($relationIdentifier, $id, $children, $subtractive = true, $isRelation = true)
+		public function setChildren ($relationIdentifier, $id, $children, $subtractive = true, $isRelation = true, $filterColumns = true)
 		{
 			$relation = $this->getRelation($relationIdentifier);
 			$children = (array)$children;
@@ -689,6 +689,10 @@
 				$parentPrimaryKey = $this->getPrimaryKey();
 
 				foreach ($children as $child) {
+					if ($filterColumns) {
+						$child = $relation->getRelatedTableObject()->filterColumns($child);
+					}
+
 					if ($key = $child[$primaryKey]) {
 						$childIds[]               = $key;
 						$child[$parentPrimaryKey] = $id;
@@ -730,6 +734,10 @@
 				}
 
 				foreach ($children as $child) {
+					if ($filterColumns) {
+						$child = $relation->getRelatedTableObject()->filterColumns($child);
+					}
+
 					if ($isRelation) {
 						$key                        = $child[$keyField];
 						$child[$relation->getKey()] = $id;
