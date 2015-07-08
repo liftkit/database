@@ -19,11 +19,11 @@
 		}
 	},
 	"require": {
-		"liftkit/dependency-injection": "1.*",
-		"liftkit/collection": "1.*"
+		"liftkit/dependency-injection": "^1.0",
+		"liftkit/collection": "^1.0"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "4.5.*",
-		"phpunit/dbunit": "1.2.*"
+		"phpunit/phpunit": "^4.5",
+		"phpunit/dbunit": "^1.2"
 	}
 }
