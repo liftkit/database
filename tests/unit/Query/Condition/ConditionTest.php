@@ -174,6 +174,17 @@
 		}
 
 
+		public function testInEmpty ()
+		{
+			$this->condition->in('id', array());
+
+			$this->assertEquals(
+				$this->normalizeSql($this->condition),
+				"FALSE"
+			);
+		}
+
+
 		public function testNotIn ()
 		{
 			$this->condition->notIn('id', array(1, 2, 3, 4, 5, 6));
@@ -181,6 +192,17 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
 				"`id` NOT IN ('1', '2', '3', '4', '5', '6')"
+			);
+		}
+
+
+		public function testNotInEmpty ()
+		{
+			$this->condition->notIn('id', array());
+
+			$this->assertEquals(
+				$this->normalizeSql($this->condition),
+				"TRUE"
 			);
 		}
 
@@ -197,6 +219,18 @@
 		}
 
 
+		public function testOrInEmpty ()
+		{
+			$this->condition->equal('id', 2);
+			$this->condition->orIn('id', array());
+
+			$this->assertEquals(
+				$this->normalizeSql($this->condition),
+				"`id` = '2' OR FALSE"
+			);
+		}
+
+
 		public function testOrNotIn ()
 		{
 			$this->condition->equal('id', 2);
@@ -205,6 +239,18 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
 				"`id` = '2' OR `id` NOT IN ('1', '2', '3', '4', '5', '6')"
+			);
+		}
+
+
+		public function testOrNotInEmpty ()
+		{
+			$this->condition->equal('id', 2);
+			$this->condition->orNotIn('id', array());
+
+			$this->assertEquals(
+				$this->normalizeSql($this->condition),
+				"`id` = '2' OR TRUE"
 			);
 		}
 
