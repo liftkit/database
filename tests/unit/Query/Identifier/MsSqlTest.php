@@ -2,13 +2,13 @@
 
 	namespace LiftKit\Tests\Unit\Database\Query\Identifier;
 
-	use LiftKit\Database\Query\Identifier\MySql as Identifier;
+	use LiftKit\Database\Query\Identifier\MsSql as Identifier;
 	use PHPUnit_Framework_TestCase;
 
 	use LiftKit\Database\Query\Raw\Raw;
 
 
-	class MySqlTest extends PHPUnit_Framework_TestCase
+	class MsSqlTest extends PHPUnit_Framework_TestCase
 	{
 
 
@@ -16,15 +16,18 @@
 		{
 			$identifier = new Identifier('test');
 
-			$this->assertEquals($identifier, '`test`');
+			$this->assertEquals($identifier, '"test"');
 		}
 
 
+		/**
+		 * @expectedException \LiftKit\Database\Query\Exception\Query
+		 */
 		public function testIdentifierWithQuote ()
 		{
-			$identifier = new Identifier('tes`t');
+			$identifier = new Identifier('tes"t');
 
-			$this->assertEquals($identifier, '`tes``t`');
+			$identifier->quote();
 		}
 
 
@@ -32,7 +35,7 @@
 		{
 			$identifier = new Identifier('segment1.segment2.segment3');
 
-			$this->assertEquals($identifier, '`segment1`.`segment2`.`segment3`');
+			$this->assertEquals($identifier, '"segment1"."segment2"."segment3"');
 		}
 
 
@@ -40,7 +43,7 @@
 		{
 			$identifier = new Identifier('segment1.SEGMENT 2.segment3');
 
-			$this->assertEquals($identifier, '`segment1`.`SEGMENT 2`.`segment3`');
+			$this->assertEquals($identifier, '"segment1"."SEGMENT 2"."segment3"');
 		}
 
 

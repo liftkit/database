@@ -112,7 +112,7 @@
 		public function transform ($callback)
 		{
 			$array  = array();
-			foreach ($this as $row)
+			foreach ($this->fetchAll() as $row)
 			{
 				$array[] = $callback($row);
 			}
@@ -134,7 +134,12 @@
 
 		public function count()
 		{
-			return $this->pdoStatement->rowCount();
+			$count = count($this->pdoStatement->fetchAll());
+
+			$this->pdoStatement->closeCursor();
+			$this->pdoStatement->execute();
+
+			return $count;
 		}
 
 

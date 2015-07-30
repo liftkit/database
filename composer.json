@@ -15,7 +15,8 @@
 			"LiftKit\\Database\\": "src/",
 			"LiftKit\\Tests\\Stub\\Database\\": "tests/stub/",
 			"LiftKit\\Tests\\Helpers\\Database\\": "tests/helpers/",
-			"LiftKit\\Tests\\Unit\\Database\\": "tests/unit/"
+			"LiftKit\\Tests\\Unit\\Database\\": "tests/unit/",
+			"LiftKit\\Tests\\Integration\\MsSql\\Database\\": "tests/integration/mssql/"
 		}
 	},
 	"require": {

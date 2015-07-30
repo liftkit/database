@@ -21,7 +21,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2'"
+				"id = '2'"
 			);
 		}
 
@@ -32,7 +32,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` <> '2'"
+				"id <> '2'"
 			);
 		}
 
@@ -44,7 +44,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `value` = 'test'"
+				"id = '2' OR value = 'test'"
 			);
 		}
 
@@ -56,7 +56,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `value` <> 'test'"
+				"id = '2' OR value <> 'test'"
 			);
 		}
 
@@ -67,7 +67,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` < '2'"
+				"id < '2'"
 			);
 		}
 
@@ -79,7 +79,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` < '2'"
+				"id = '2' OR id < '2'"
 			);
 		}
 
@@ -90,7 +90,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` <= '2'"
+				"id <= '2'"
 			);
 		}
 
@@ -101,7 +101,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` > '2'"
+				"id > '2'"
 			);
 		}
 
@@ -113,7 +113,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` > '2'"
+				"id = '2' OR id > '2'"
 			);
 		}
 
@@ -124,7 +124,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` >= '2'"
+				"id >= '2'"
 			);
 		}
 
@@ -146,7 +146,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id1` = `id2`"
+				"id1 = id2"
 			);
 		}
 
@@ -158,7 +158,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' AND `value` = 'test'"
+				"id = '2' AND value = 'test'"
 			);
 		}
 
@@ -169,7 +169,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` IN ('1', '2', '3', '4', '5', '6')"
+				"id IN ('1', '2', '3', '4', '5', '6')"
 			);
 		}
 
@@ -191,7 +191,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` NOT IN ('1', '2', '3', '4', '5', '6')"
+				"id NOT IN ('1', '2', '3', '4', '5', '6')"
 			);
 		}
 
@@ -214,7 +214,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` IN ('1', '2', '3', '4', '5', '6')"
+				"id = '2' OR id IN ('1', '2', '3', '4', '5', '6')"
 			);
 		}
 
@@ -226,7 +226,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR FALSE"
+				"id = '2' OR FALSE"
 			);
 		}
 
@@ -238,7 +238,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` NOT IN ('1', '2', '3', '4', '5', '6')"
+				"id = '2' OR id NOT IN ('1', '2', '3', '4', '5', '6')"
 			);
 		}
 
@@ -250,7 +250,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR TRUE"
+				"id = '2' OR TRUE"
 			);
 		}
 
@@ -261,7 +261,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` IS NULL"
+				"id IS NULL"
 			);
 		}
 
@@ -272,7 +272,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` IS TRUE"
+				"id IS TRUE"
 			);
 		}
 
@@ -283,7 +283,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` IS FALSE"
+				"id IS FALSE"
 			);
 		}
 
@@ -303,7 +303,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` LIKE '%1%'"
+				"id LIKE '%1%'"
 			);
 		}
 
@@ -314,7 +314,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` NOT LIKE '%1%'"
+				"id NOT LIKE '%1%'"
 			);
 		}
 
@@ -326,7 +326,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` LIKE '%1%'"
+				"id = '2' OR id LIKE '%1%'"
 			);
 		}
 
@@ -338,7 +338,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` NOT LIKE '%1%'"
+				"id = '2' OR id NOT LIKE '%1%'"
 			);
 		}
 
@@ -349,7 +349,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` REGEXP '.*'"
+				"id REGEXP '.*'"
 			);
 		}
 
@@ -360,7 +360,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` NOT REGEXP '.*'"
+				"id NOT REGEXP '.*'"
 			);
 		}
 
@@ -372,7 +372,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` REGEXP '.*'"
+				"id = '2' OR id REGEXP '.*'"
 			);
 		}
 
@@ -384,7 +384,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR `id` NOT REGEXP '.*'"
+				"id = '2' OR id NOT REGEXP '.*'"
 			);
 		}
 
@@ -398,7 +398,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($outerCondition),
-				"`id1` = '2' AND (`id2` = '3' OR `id2` = '4')"
+				"id1 = '2' AND (id2 = '3' OR id2 = '4')"
 			);
 		}
 
@@ -412,7 +412,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($outerCondition),
-				"`id1` = '2' AND NOT (`id2` = '3' OR `id2` = '4')"
+				"id1 = '2' AND NOT (id2 = '3' OR id2 = '4')"
 			);
 		}
 
@@ -426,7 +426,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($outerCondition),
-				"`id1` = '2' OR (`id2` = '3' OR `id2` = '4')"
+				"id1 = '2' OR (id2 = '3' OR id2 = '4')"
 			);
 		}
 
@@ -440,7 +440,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($outerCondition),
-				"`id1` = '2' OR NOT (`id2` = '3' OR `id2` = '4')"
+				"id1 = '2' OR NOT (id2 = '3' OR id2 = '4')"
 			);
 		}
 
@@ -463,7 +463,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' AND NOT (id = 1)"
+				"id = '2' AND NOT (id = 1)"
 			);
 		}
 
@@ -475,7 +475,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR (id = 1)"
+				"id = '2' OR (id = 1)"
 			);
 		}
 
@@ -487,7 +487,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"`id` = '2' OR NOT (id = 1)"
+				"id = '2' OR NOT (id = 1)"
 			);
 		}
 
@@ -501,17 +501,17 @@
 				$this->normalizeSql(
 					"(
 						(
-							`field1` REGEXP '[[:<:]]three'
-							OR `field2` REGEXP '[[:<:]]three'
-							OR `field3` REGEXP '[[:<:]]three'
+							field1 REGEXP '[[:<:]]three'
+							OR field2 REGEXP '[[:<:]]three'
+							OR field3 REGEXP '[[:<:]]three'
 						) AND (
-							`field1` REGEXP '[[:<:]]different'
-							OR `field2` REGEXP '[[:<:]]different'
-							OR `field3` REGEXP '[[:<:]]different'
+							field1 REGEXP '[[:<:]]different'
+							OR field2 REGEXP '[[:<:]]different'
+							OR field3 REGEXP '[[:<:]]different'
 						) AND (
-							`field1` REGEXP '[[:<:]]terms'
-							OR `field2` REGEXP '[[:<:]]terms'
-							OR `field3` REGEXP '[[:<:]]terms'
+							field1 REGEXP '[[:<:]]terms'
+							OR field2 REGEXP '[[:<:]]terms'
+							OR field3 REGEXP '[[:<:]]terms'
 						)
 					)"
 				)

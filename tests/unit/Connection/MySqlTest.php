@@ -3,7 +3,7 @@
 
 	namespace LiftKit\Tests\Unit\Database\Connection;
 
-	use LiftKit\Database\Connection\MySQL as Connection;
+	use LiftKit\Database\Connection\MySql as Connection;
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Query\Identifier\Identifier;

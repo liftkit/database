@@ -19,22 +19,6 @@
 
 	abstract class ConnectionTest extends DefaultTestCase
 	{
-		/**
-		 * @var Connection
-		 */
-		protected $connection;
-
-
-		/**
-		 * @var Cache
-		 */
-		protected $cache;
-
-
-		/**
-		 * @var Container
-		 */
-		protected $container;
 
 
 		public function testConnectsToDatabase ()
@@ -62,7 +46,7 @@
 				)
 			);
 
-			$this->assertTablesEqual($queryDataSet->getTable('parents'), $filterDataSet->getTable('parents'));
+			$this->assertTablesEqual($filterDataSet->getTable('parents'), $queryDataSet->getTable('parents'));
 		}
 
 
@@ -133,8 +117,7 @@
 
 		public function testInsertId ()
 		{
-			$sql = "INSERT INTO parents
-					SET parent_name = 'parent4'";
+			$sql = "INSERT INTO parents (parent_name) VALUES ('parent4')";
 
 			$this->connection->query($sql);
 
@@ -145,29 +128,22 @@
 		public function testTransactionRollback ()
 		{
 			$this->connection->startTransaction();
-
-			$this->connection->query("INSERT INTO parents SET parent_name = 'parent4'");
-
-			$result = $this->connection->query("SELECT * FROM parents");
-			$this->assertEquals($result->count(), 4);
-
+			$this->connection->query("INSERT INTO parents (parent_name) VALUES ('parent4')");
 			$this->connection->rollback();
 
 			$result = $this->connection->query("SELECT * FROM parents");
-			$this->assertEquals($result->count(), 3);
+			$this->assertEquals(3, $result->count());
 		}
 
 
 		public function testTransactionCommit ()
 		{
 			$this->connection->startTransaction();
-
-			$this->connection->query("INSERT INTO parents SET parent_name = 'parent4'");
-
+			$this->connection->query("INSERT INTO parents (parent_name) VALUES ('parent4')");
 			$this->connection->commit();
 
 			$result = $this->connection->query("SELECT * FROM parents");
-			$this->assertEquals($result->count(), 4);
+			$this->assertEquals(4, $result->count());
 		}
 
 
@@ -208,7 +184,7 @@
 			$updateQuery = $this->connection->createQuery()
 				->update()
 				->table('children')
-				->set(array('child_id' => 123456))
+				->set(array('child_name' => 'name'))
 				->whereEqual('child_id', 12345);
 
 			$this->connection->query($updateQuery);
@@ -242,11 +218,11 @@
 
 		public function testResultSetReturnedInsteadOfInsertId ()
 		{
-			$id = $this->connection->query("INSERT INTO parents SET parent_name = 'parent4'");
+			$id = $this->connection->query("INSERT INTO parents (parent_name) VALUES ('parent4')");
 
 			$this->assertEquals($id, 4);
 
-			$this->connection->query("INSERT INTO parents SET parent_name = 'parent4'");
+			$this->connection->query("INSERT INTO parents (parent_name) VALUES ('parent4')");
 
 			$result = $this->connection->query("SELECT * FROM parents WHERE parent_id = 4");
 

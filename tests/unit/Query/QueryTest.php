@@ -19,10 +19,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
+					SELECT child_id, child_name
+					FROM children
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -35,10 +37,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children` AS `alias`
+					SELECT child_id, child_name
+					FROM children AS alias
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -54,11 +58,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					WHERE (`child_id` = '2')
+					SELECT child_id, child_name
+					FROM children
+					WHERE (child_id = '2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -74,11 +80,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
+					SELECT child_id, child_name
+					FROM children
 					WHERE (child_id = 2)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -97,11 +105,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					WHERE (`child_id` = '2') AND (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					WHERE (child_id = '2') AND (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -120,11 +130,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					WHERE (`child_id` = '2') AND NOT (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					WHERE (child_id = '2') AND NOT (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -143,11 +155,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					WHERE (`child_id` = '2') OR (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					WHERE (child_id = '2') OR (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -166,11 +180,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					WHERE (`child_id` = '2') OR NOT (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					WHERE (child_id = '2') OR NOT (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -186,11 +202,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					HAVING (`child_id` = '2')
+					SELECT child_id, child_name
+					FROM children
+					HAVING (child_id = '2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -209,11 +227,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					HAVING (`child_id` = '2') AND (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					HAVING (child_id = '2') AND (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -232,11 +252,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					HAVING (`child_id` = '2') AND NOT (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					HAVING (child_id = '2') AND NOT (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -255,11 +277,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					HAVING (`child_id` = '2') OR (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					HAVING (child_id = '2') OR (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -278,11 +302,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					HAVING (`child_id` = '2') OR NOT (`child_name` = 'child2')
+					SELECT child_id, child_name
+					FROM children
+					HAVING (child_id = '2') OR NOT (child_name = 'child2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -302,11 +328,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` ON (`children`.`parent_id` = `parents`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					LEFT JOIN parents ON (children.parent_id = parents.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -327,11 +355,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					LEFT JOIN parents AS alias ON (children.parent_id = alias.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -345,11 +375,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` ON (`children`.`parent_id` = `parents`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					LEFT JOIN parents ON (children.parent_id = parents.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -363,11 +395,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					LEFT JOIN parents AS alias ON (children.parent_id = alias.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -381,11 +415,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` USING (`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					LEFT JOIN parents USING (parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -399,11 +435,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` AS `alias` USING (`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					LEFT JOIN parents AS alias USING (parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -423,11 +461,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					RIGHT JOIN `parents` ON (`children`.`parent_id` = `parents`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					RIGHT JOIN parents ON (children.parent_id = parents.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -448,11 +488,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					RIGHT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					RIGHT JOIN parents AS alias ON (children.parent_id = alias.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -466,11 +508,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					RIGHT JOIN `parents` ON (`children`.`parent_id` = `parents`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					RIGHT JOIN parents ON (children.parent_id = parents.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -484,11 +528,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					RIGHT JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					RIGHT JOIN parents AS alias ON (children.parent_id = alias.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -502,11 +548,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					RIGHT JOIN `parents` USING (`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					RIGHT JOIN parents USING (parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -520,11 +568,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					RIGHT JOIN `parents` AS `alias` USING (`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					RIGHT JOIN parents AS alias USING (parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -544,11 +594,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					INNER JOIN `parents` ON (`children`.`parent_id` = `parents`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					INNER JOIN parents ON (children.parent_id = parents.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -569,11 +621,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					INNER JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					INNER JOIN parents AS alias ON (children.parent_id = alias.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -587,11 +641,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					INNER JOIN `parents` ON (`children`.`parent_id` = `parents`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					INNER JOIN parents ON (children.parent_id = parents.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -605,11 +661,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					INNER JOIN `parents` AS `alias` ON (`children`.`parent_id` = `alias`.`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					INNER JOIN parents AS alias ON (children.parent_id = alias.parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -623,11 +681,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					INNER JOIN `parents` USING (`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					INNER JOIN parents USING (parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -641,11 +701,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					INNER JOIN `parents` AS `alias` USING (`parent_id`)
+					SELECT child_id, child_name
+					FROM children
+					INNER JOIN parents AS alias USING (parent_id)
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -659,11 +721,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					GROUP BY `parent_id`
+					SELECT child_id, child_name
+					FROM children
+					GROUP BY parent_id
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -678,11 +742,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					GROUP BY `parent_id`, `child_id`
+					SELECT child_id, child_name
+					FROM children
+					GROUP BY parent_id, child_id
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -696,11 +762,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					ORDER BY `parent_id` ASC
+					SELECT child_id, child_name
+					FROM children
+					ORDER BY parent_id ASC
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -715,11 +783,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					ORDER BY `parent_id` ASC, `child_name` DESC
+					SELECT child_id, child_name
+					FROM children
+					ORDER BY parent_id ASC, child_name DESC
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -733,11 +803,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
+					SELECT child_id, child_name
+					FROM children
 					LIMIT 0, 1
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -752,11 +824,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
+					SELECT child_id, child_name
+					FROM children
 					LIMIT 1, 10
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -770,10 +844,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name` AS `name`
-					FROM `children`
+					SELECT child_id, child_name AS name
+					FROM children
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -787,10 +863,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_name` AS `name`, `child_id`
-					FROM `children`
+					SELECT child_name AS name, child_id
+					FROM children
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -808,10 +886,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name` AS `name`
-					FROM `children`
+					SELECT child_id, child_name AS name
+					FROM children
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -825,10 +905,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT `child_name`, `child_id`
-					FROM `children`
+					SELECT child_name, child_id
+					FROM children
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -838,7 +920,7 @@
 				->into('children')
 				->set(
 					array(
-						'child_id' => 6,
+						'child_id' => 156,
 						'child_name' => 'child6',
 					)
 				);
@@ -846,10 +928,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					INSERT INTO `children`
-						SET `child_id` = '6', `child_name` = 'child6'
+					INSERT INTO children
+						SET child_id = '156', child_name = 'child6'
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -867,10 +951,12 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					INSERT IGNORE INTO `children`
-						SET `child_id` = '6', `child_name` = 'child6'
+					INSERT IGNORE INTO children
+						SET child_id = '6', child_name = 'child6'
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -888,11 +974,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					INSERT INTO `children`
-						SET `child_id` = '6', `child_name` = 'child6'
-					ON DUPLICATE KEY UPDATE `child_id` = '6', `child_name` = 'child6'
+					INSERT INTO children
+						SET child_id = '6', child_name = 'child6'
+					ON DUPLICATE KEY UPDATE child_id = '6', child_name = 'child6'
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -912,11 +1000,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					UPDATE `children`
-						SET `child_name` = 'child6'
-					WHERE (`child_id` = '2')
+					UPDATE children
+						SET child_name = 'child6'
+					WHERE (child_id = '2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -931,11 +1021,13 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					DELETE `children`.*
-					FROM `children`
-					WHERE (`child_id` = '2')
+					DELETE children.*
+					FROM children
+					WHERE (child_id = '2')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -949,10 +1041,12 @@
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
 					SELECT *
-					FROM `children`
-					WHERE (`child_id` = '1')
+					FROM children
+					WHERE (child_id = '1')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -966,10 +1060,12 @@
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
 					SELECT *
-					FROM `children`
-					HAVING (`child_id` = '1')
+					FROM children
+					HAVING (child_id = '1')
 				")
 			);
+
+			$this->query->execute();
 		}
 
 
@@ -1019,6 +1115,7 @@
 
 			$innerQuery = $this->connection->createQuery()
 				->addField('child_name')
+				->addField('children.parent_id')
 				->leftJoinUsing('parents', 'parent_id')
 				->whereEqual('child_id', 2)
 				->havingEqual('child_id', 2)
@@ -1030,14 +1127,16 @@
 			$this->assertEquals(
 				$this->normalizeSql($query),
 				$this->normalizeSql("
-					SELECT `child_id`, `child_name`
-					FROM `children`
-					LEFT JOIN `parents` USING (`parent_id`)
-					WHERE (`child_name` = 'child1') AND ((`child_id` = '2'))
-					HAVING (`parent_id` = '1') AND ((`child_id` = '2'))
-					ORDER BY `child_id` ASC, `parents`.`parent_id` ASC
+					SELECT child_id, child_name, children.parent_id
+					FROM children
+					LEFT JOIN parents USING (parent_id)
+					WHERE (child_name = 'child1') AND ((child_id = '2'))
+					HAVING (parent_id = '1') AND ((child_id = '2'))
+					ORDER BY child_id ASC, parents.parent_id ASC
 					LIMIT 0, 1
 				")
 			);
+
+			$this->query->execute();
 		}
 	}

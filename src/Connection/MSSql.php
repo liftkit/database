@@ -8,7 +8,7 @@
 
 	namespace LiftKit\Database\Connection;
 
-	use LiftKit\Database\Query\Identifier\MySql as Identifier;
+	use LiftKit\Database\Query\Identifier\MsSql as Identifier;
 
 
 	/**
@@ -16,7 +16,7 @@
 	 *
 	 * @package LiftKit\Database\Connection
 	 */
-	class MySql extends Connection
+	class MsSql extends Connection
 	{
 
 
@@ -43,11 +43,15 @@
 		public function primaryKey ($tableName)
 		{
 			if (! isset($this->primaryKeys[$tableName])) {
-				$sql = "SHOW INDEX FROM " . $this->quoteIdentifier($tableName) . " WHERE Key_name = 'PRIMARY'";
+				$sql = "SELECT *
+					    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+					        JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu ON tc.CONSTRAINT_NAME = ccu.Constraint_name
+					    WHERE tc.CONSTRAINT_TYPE = 'Primary Key'
+					        AND tc.TABLE_NAME = " . $this->quote($tableName);
 
 				$keyResult                      = $this->query($sql);
 				$key                            = $keyResult->fetchRow();
-				$this->primaryKeys[$tableName]  = $key['Column_name'];
+				$this->primaryKeys[$tableName]  = $key['COLUMN_NAME'];
 			}
 
 			return $this->primaryKeys[$tableName];

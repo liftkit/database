@@ -66,6 +66,7 @@
 			$sql = trim($sql);
 			$sql = preg_replace('#\(\s+#', '(', $sql);
 			$sql = preg_replace('#\s+\)#', ')', $sql);
+			$sql = preg_replace('#`([A-Za-z0-9_\-]+?)`#', '$1', $sql);
 
 			return $sql;
 		}

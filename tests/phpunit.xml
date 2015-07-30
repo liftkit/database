@@ -6,10 +6,20 @@
         <var name="DB_USER" value="root" />
         <var name="DB_PASSWORD" value="root" />
         <var name="DB_SCHEMA" value="test" />
+
+        <var name="DB_DSN_MSSQL" value="dblib:host=192.168.1.27:1433;dbname=test" />
+        <var name="DB_HOST_MSSQL" value="192.168.1.27" />
+        <var name="DB_PORT_MSSQL" value="1433" />
+        <var name="DB_USER_MSSQL" value="sa" />
+        <var name="DB_PASSWORD_MSSQL" value="root" />
+        <var name="DB_SCHEMA_MSSQL" value="test" />
     </php>
     <testsuites>
-        <testsuite name="database">
+        <testsuite name="unit">
             <directory>unit/</directory>
+        </testsuite>
+        <testsuite name="mssql">
+            <directory>integration/mssql/</directory>
         </testsuite>
     </testsuites>
 </phpunit>
