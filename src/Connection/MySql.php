@@ -72,6 +72,23 @@
 
 			return $this->primaryKeys[$tableName];
 		}
+
+
+		/**
+		 * getFields function.
+		 *
+		 * @access public
+		 *
+		 * @param string $table
+		 *
+		 * @return array
+		 */
+		public function getFields ($table)
+		{
+			$sql = "SHOW COLUMNS FROM " . $this->quoteIdentifier($table);
+
+			return $this->query($sql)->fetchColumn('Field');
+		}
 	}
 
 

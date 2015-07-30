@@ -24,6 +24,8 @@
 	use LiftKit\Database\Schema\Table\Exception\Relation as RelationException;
 	use LiftKit\Database\Query\Exception\Query as QueryBuilderException;
 
+	use LiftKit\Database\Query\Exception\UnsupportedFeature;
+
 
 	/**
 	 * Class Table
@@ -325,7 +327,7 @@
 		public function insertUpdateRow ($row, $filterColumns = true)
 		{
 			if ($filterColumns) {
-				$row = $this->filterColumns($row);
+				$row = $this->filterColumns($row, false);
 			}
 
 			$this->database->createQuery()
@@ -346,6 +348,8 @@
 		 */
 		public function updateRow ($row, $filterColumns = true)
 		{
+			$id = $row[$this->getPrimaryKey()];
+
 			if ($filterColumns) {
 				$row = $this->filterColumns($row);
 			}
@@ -356,7 +360,7 @@
 				->set($row)
 				->where(
 					$this->database->createCondition()
-						->equal($this->getPrimaryKey(), $row[$this->getPrimaryKey()])
+						->equal($this->getPrimaryKey(), $id)
 				)
 				->execute();
 		}
@@ -429,7 +433,7 @@
 			$relation = $this->getRelation($relationIdentifier);
 
 			$query = $this->database->createQuery()->whereEqual(
-				$this->database->primaryKey($relation->getRelatedTable()),
+				$relation->getRelatedTable() . '.' . $this->database->primaryKey($relation->getRelatedTable()),
 				$childId
 			);
 
@@ -607,16 +611,18 @@
 					->whereEqual($relation->getKey(), $childId)
 					->execute();
 			} else if ($relation instanceof ManyToMany) {
-				$this->database->createQuery()
-					->insertIgnore()
-					->into($relation->getRelationalTable())
-					->set(
-						array(
-							$relation->getKey()         => $id,
-							$relation->getRelatedKey()  => $childId,
+				if (! $this->getChild($relationIdentifier, $id, $childId)) {
+					$this->database->createQuery()
+						->insert()
+						->into($relation->getRelationalTable())
+						->set(
+							array(
+								$relation->getKey()         => $id,
+								$relation->getRelatedKey()  => $childId,
+							)
 						)
-					)
-					->execute();
+						->execute();
+				}
 			} else {
 				throw new RelationException('Invalid relation type `' . gettype($relation) . '`');
 			}
@@ -689,16 +695,18 @@
 				$parentPrimaryKey = $this->getPrimaryKey();
 
 				foreach ($children as $child) {
+					$key = $child[$primaryKey];
+
 					if ($filterColumns) {
 						$child = $relation->getRelatedTableObject()->filterColumns($child);
 					}
 
-					if ($key = $child[$primaryKey]) {
+					if ($key) {
 						$childIds[]               = $key;
 						$child[$parentPrimaryKey] = $id;
 
 						$this->database->createQuery()
-							->insertUpdate()
+							->update()
 							->table($relation->getRelatedTable())
 							->set($child)
 							->whereEqual($primaryKey, $key)
@@ -707,7 +715,7 @@
 						$child[$parentPrimaryKey] = $id;
 
 						$childIds[] = $this->database->createQuery()
-							->insertUpdate()
+							->insert()
 							->into($relation->getRelatedTable())
 							->set($child)
 							->execute();
@@ -734,7 +742,9 @@
 				}
 
 				foreach ($children as $child) {
-					if ($filterColumns) {
+					if ($filterColumns && $isRelation) {
+						$child = $relation->getRelatedTableObject()->filterColumns($child, false);
+					} else {
 						$child = $relation->getRelatedTableObject()->filterColumns($child);
 					}
 
@@ -749,14 +759,14 @@
 						$childIds[] = $key;
 
 						$this->database->createQuery()
-							->insertUpdate()
+							->update()
 							->table($table)
 							->set($child)
 							->whereEqual($keyField, $key)
 							->execute();
 					} else {
 						$childIds[] = $this->database->createQuery()
-							->insertUpdate()
+							->insert()
 							->into($table)
 							->set($child)
 							->execute();
@@ -870,9 +880,19 @@
 		 *
 		 * @return array
 		 */
-		protected function filterColumns ($row)
+		protected function filterColumns ($row, $stripPrimary = true)
 		{
-			$columns = $this->database->getFields($this->table)->fetchColumn('Field');
+			$columns = $this->database->getFields($this->table);
+
+			if ($stripPrimary) {
+				$columns = array_filter($columns, function ($column) {
+					if ($this->database->primaryKey($this->table) == $column) {
+						return false;
+					} else {
+						return true;
+					}
+				});
+			}
 
 			return array_intersect_key($row, array_flip($columns));
 		}

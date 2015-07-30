@@ -13,9 +13,6 @@
 
 	class MySql extends Query
 	{
-
-
-
 	}
 
 

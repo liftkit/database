@@ -228,12 +228,7 @@
 		 *
 		 * @return array
 		 */
-		public function getFields ($table)
-		{
-			$sql = "SHOW COLUMNS FROM " . $this->quoteIdentifier($table);
-
-			return $this->query($sql);
-		}
+		abstract public function getFields ($table);
 
 
 		/**

@@ -77,6 +77,23 @@
 
 			return $this->primaryKeys[$tableName];
 		}
+
+
+		/**
+		 * getFields function.
+		 *
+		 * @access public
+		 *
+		 * @param string $table
+		 *
+		 * @return array
+		 */
+		public function getFields ($table)
+		{
+			$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = " . $this->quote($table);
+
+			return $this->query($sql)->fetchColumn('COLUMN_NAME');
+		}
 	}
 
 

@@ -132,12 +132,13 @@
 			$this->assertEquals(
 				$this->normalizeSql("
 					SELECT child_id, child_name
-					FROM (
-						SELECT TOP 100 PERCENT  child_id, child_name, ROW_NUMBER() OVER(ORDER BY child_id ASC) AS LK_ROW_NUMBER
+					FROM children
+					LEFT JOIN (
+						SELECT children.child_id AS LK_ROW_ID, ROW_NUMBER() OVER (ORDER BY child_id ASC) AS LK_ROW_NUMBER
 						FROM children
-						ORDER BY child_id ASC
-					) AS children
-					WHERE LK_ROW_NUMBER BETWEEN 1 AND 1
+					) AS LK_ROWS ON (LK_ROWS.LK_ROW_ID = children.child_id)
+					WHERE ((LK_ROWS.LK_ROW_NUMBER >= '1')
+						AND (LK_ROWS.LK_ROW_NUMBER <= '1'))
 				"),
 				$this->normalizeSql($this->query)
 			);
@@ -157,12 +158,13 @@
 			$this->assertEquals(
 				$this->normalizeSql("
 					SELECT child_id, child_name
-					FROM (
-						SELECT TOP 100 PERCENT child_id, child_name, ROW_NUMBER() OVER(ORDER BY child_id ASC) AS LK_ROW_NUMBER
+					FROM children
+					LEFT JOIN (
+						SELECT children.child_id AS LK_ROW_ID, ROW_NUMBER() OVER (ORDER BY child_id ASC) AS LK_ROW_NUMBER
 						FROM children
-						ORDER BY child_id ASC
-					) AS children
-					WHERE LK_ROW_NUMBER BETWEEN 2 AND 11
+					) AS LK_ROWS ON (LK_ROWS.LK_ROW_ID = children.child_id)
+					WHERE ((LK_ROWS.LK_ROW_NUMBER >= '2')
+						AND (LK_ROWS.LK_ROW_NUMBER <= '11'))
 				"),
 				$this->normalizeSql($this->query)
 			);

@@ -134,6 +134,10 @@
 
 		protected $fields = array();
 		protected $data   = array();
+
+		/**
+		 * @var Join[]
+		 */
 		protected $joins  = array();
 		protected $unions = array();
 

@@ -3,7 +3,7 @@
 
 	namespace LiftKit\Tests\Unit\Database\Schema\Table;
 
-	use LiftKit\Database\Connection\MySQL as Connection;
+	use LiftKit\Database\Connection\MySql as Connection;
 	use LiftKit\Database\Cache\Cache;
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Schema\Table\Table;
@@ -88,7 +88,7 @@
 				"
 					SELECT parents.*, children.*
 					FROM children
-					LEFT JOIN parents USING(parent_id)
+					LEFT JOIN parents ON parents.parent_id = children.parent_id
 				"
 			);
 		}
@@ -104,7 +104,7 @@
 				"
 					SELECT parents.*, children.*
 					FROM children
-					LEFT JOIN parents USING(parent_id)
+					LEFT JOIN parents ON parents.parent_id = children.parent_id
 					ORDER BY child_id DESC
 				"
 			);
@@ -132,8 +132,7 @@
 			$sql = "SELECT parents.*, children.*
 					FROM children
 					LEFT JOIN parents ON children.parent_id = parents.parent_id
-					WHERE child_name = 'child1'
-					LIMIT 1";
+					WHERE child_name = 'child1'";
 			$result = self::$pdo->query($sql);
 
 			$this->assertEquals(
@@ -149,17 +148,16 @@
 			$beforeCount = $this->createTableFromQuery($sql)->getRowCount();
 
 			$insertData = array(
-				'child_id' => '100',
 				'child_name' => 'child100',
 			);
 
-			$this->childrenTable->insertRow($insertData);
+			$id = $this->childrenTable->insertRow($insertData);
 
 			$afterCount = $this->createTableFromQuery($sql)->getRowCount();
 
 			$this->assertEquals($afterCount - $beforeCount, 1);
 
-			$child = $this->childrenTable->getRow(100);
+			$child = $this->childrenTable->getRow($id);
 
 			$this->assertCommonFieldsMatch($child->toArray(), $insertData);
 		}
@@ -168,12 +166,12 @@
 		public function testUpdateRow ()
 		{
 			$updateData = array(
-				'child_id' => '1',
+				'child_id' => 1,
 				'child_name' => 'new_child_name',
 			);
 
 			$this->childrenTable->updateRow($updateData);
-			$child = $this->childrenTable->getRow('1');
+			$child = $this->childrenTable->getRow(1);
 
 			$this->assertCommonFieldsMatch($child->toArray(), $updateData);
 		}
