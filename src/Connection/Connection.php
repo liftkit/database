@@ -134,19 +134,13 @@
 		/**
 		 * @return DatabaseQuery
 		 */
-		public function createQuery ()
-		{
-			return new DatabaseQuery($this);
-		}
+		abstract public function createQuery ();
 
 
 		/**
 		 * @return DatabaseQueryCondition
 		 */
-		public function createCondition ()
-		{
-			return new DatabaseQueryCondition($this);
-		}
+		abstract public function createCondition ();
 
 
 		/**

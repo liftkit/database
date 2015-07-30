@@ -114,7 +114,7 @@
 	 *
 	 * @method $this havingSearch(array $fields, string $query)
 	 */
-	class Query
+	abstract class Query
 	{
 		const QUERY_TYPE_SELECT        = 'SELECT';
 		const QUERY_TYPE_INSERT        = 'INSERT';
@@ -362,60 +362,114 @@
 
 		public function getRaw ()
 		{
-			$queryLines = array();
-
 			if ($this->type == self::QUERY_TYPE_SELECT) {
-				$queryLines[] = "SELECT " . $this->processFields();
-
-				if ($this->alias) {
-					$queryLines[] = "FROM " . $this->filterIdentifier($this->table) . " AS " . $this->filterIdentifier($this->alias);
-				} else {
-					$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
-				}
-
-				$queryLines[] = $this->processJoins();
-				$queryLines[] = $this->processWhere();
-				$queryLines[] = $this->processGroupBy();
-				$queryLines[] = $this->processHaving();
-				$queryLines[] = $this->processOrderBy();
-				$queryLines[] = $this->processLimit();
+				return $this->generateSelectQuery();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT) {
-				$queryLines[] = "INSERT INTO " . $this->filterIdentifier($this->table);
-				$queryLines[] = "SET " . $this->processData();
+				return $this->generatInsertQuery();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT_IGNORE) {
-				$queryLines[] = "INSERT IGNORE INTO ".$this->filterIdentifier($this->table);
-				$queryLines[] = "SET " . $this->processData();
+				return $this->generateInsertIgnoreQuery();
 
 			} else if ($this->type == self::QUERY_TYPE_INSERT_UPDATE) {
-				$queryLines[] = "INSERT INTO " . $this->filterIdentifier($this->table);
-				$queryLines[] = "SET " . $this->processData();
-				$queryLines[] = "ON DUPLICATE KEY UPDATE " . $this->processData();
+				return $this->generateInsertUpdateQuery();
 
 			} else if ($this->type == self::QUERY_TYPE_UPDATE) {
-				$queryLines[] = "UPDATE " . $this->filterIdentifier($this->table);
-				$queryLines[] = "SET " . $this->processData();
-				$queryLines[] = $this->processJoins();
-				$queryLines[] = $this->processWhere();
-				$queryLines[] = $this->processGroupBy();
-				$queryLines[] = $this->processHaving();
-				$queryLines[] = $this->processOrderBy();
-				$queryLines[] = $this->processLimit();
+				return $this->generateUpdateQuery();
 
 			} else if ($this->type == self::QUERY_TYPE_DELETE) {
-				$queryLines[] = "DELETE " . $this->processFields();
-				$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
-				$queryLines[] = $this->processJoins();
-				$queryLines[] = $this->processWhere();
-				$queryLines[] = $this->processGroupBy();
-				$queryLines[] = $this->processHaving();
-				$queryLines[] = $this->processOrderBy();
-				$queryLines[] = $this->processLimit();
+				return $this->generateDeleteQuery();
 
 			} else {
 				throw new QueryBuilderException('Invalid query type '.var_export($this->type, true));
 			}
+		}
+
+
+		protected function generateSelectQuery ()
+		{
+			$queryLines[] = "SELECT " . $this->processFields();
+
+			if ($this->alias) {
+				$queryLines[] = "FROM " . $this->filterIdentifier($this->table) . " AS " . $this->filterIdentifier($this->alias);
+			} else {
+				$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
+			}
+
+			$queryLines[] = $this->processJoins();
+			$queryLines[] = $this->processWhere();
+			$queryLines[] = $this->processGroupBy();
+			$queryLines[] = $this->processHaving();
+			$queryLines[] = $this->processOrderBy();
+			$queryLines[] = $this->processLimit();
+
+			$queryLines = array_filter($queryLines);
+
+			return implode($queryLines, PHP_EOL);
+		}
+
+
+		protected function generatInsertQuery ()
+		{
+			$queryLines[] = "INSERT INTO " . $this->filterIdentifier($this->table) . " " . $this->processInsertColumns();
+			$queryLines[] = "VALUES " . $this->processInsertValues();
+
+			$queryLines = array_filter($queryLines);
+
+			return implode($queryLines, PHP_EOL);
+		}
+
+
+		protected function generateInsertIgnoreQuery ()
+		{
+			$queryLines[] = "INSERT IGNORE INTO ".$this->filterIdentifier($this->table);
+			$queryLines[] = "SET " . $this->processUpdateData();
+
+			$queryLines = array_filter($queryLines);
+
+			return implode($queryLines, PHP_EOL);
+		}
+
+
+		protected function generateInsertUpdateQuery ()
+		{
+			$queryLines[] = "INSERT INTO " . $this->filterIdentifier($this->table);
+			$queryLines[] = "SET " . $this->processUpdateData();
+			$queryLines[] = "ON DUPLICATE KEY UPDATE " . $this->processUpdateData();
+
+			$queryLines = array_filter($queryLines);
+
+			return implode($queryLines, PHP_EOL);
+		}
+
+
+		protected function generateUpdateQuery ()
+		{
+			$queryLines[] = "UPDATE " . $this->filterIdentifier($this->table);
+			$queryLines[] = "SET " . $this->processUpdateData();
+			$queryLines[] = $this->processJoins();
+			$queryLines[] = $this->processWhere();
+			$queryLines[] = $this->processGroupBy();
+			$queryLines[] = $this->processHaving();
+			$queryLines[] = $this->processOrderBy();
+			$queryLines[] = $this->processLimit();
+
+			$queryLines = array_filter($queryLines);
+
+			return implode($queryLines, PHP_EOL);
+		}
+
+
+		protected function generateDeleteQuery ()
+		{
+			$queryLines[] = "DELETE " . $this->processFields();
+			$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
+			$queryLines[] = $this->processJoins();
+			$queryLines[] = $this->processWhere();
+			$queryLines[] = $this->processGroupBy();
+			$queryLines[] = $this->processHaving();
+			$queryLines[] = $this->processOrderBy();
+			$queryLines[] = $this->processLimit();
 
 			$queryLines = array_filter($queryLines);
 
@@ -897,7 +951,7 @@
 		}
 
 
-		protected function processData ()
+		protected function processUpdateData ()
 		{
 			if (empty($this->data)) {
 				return '';
@@ -909,6 +963,38 @@
 				}
 
 				return implode(', ', $fields);
+			}
+		}
+
+
+		protected function processInsertColumns ()
+		{
+			if (empty($this->data)) {
+				return '';
+			} else {
+				$columns = array_keys($this->data);
+
+				$columns = array_map(function ($columnName) {
+					return $this->database->quoteIdentifier($columnName);
+				}, $columns);
+
+				return '(' . implode(', ', $columns) . ')';
+			}
+		}
+
+
+		protected function processInsertValues ()
+		{
+			if (empty($this->data)) {
+				return '';
+			} else {
+				$values = $this->data;
+
+				$values = array_map(function ($columnName) {
+					return $this->database->quote($columnName);
+				}, $values);
+
+				return '(' . implode(', ', $values) . ')';
 			}
 		}
 

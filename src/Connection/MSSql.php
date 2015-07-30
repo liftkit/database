@@ -10,6 +10,9 @@
 
 	use LiftKit\Database\Query\Identifier\MsSql as Identifier;
 
+	use LiftKit\Database\Query\MsSql as DatabaseQuery;
+	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
+
 
 	/**
 	 * Class MySQL
@@ -18,6 +21,24 @@
 	 */
 	class MsSql extends Connection
 	{
+
+
+		/**
+		 * @return DatabaseQuery
+		 */
+		public function createQuery ()
+		{
+			return new DatabaseQuery($this);
+		}
+
+
+		/**
+		 * @return DatabaseQueryCondition
+		 */
+		public function createCondition ()
+		{
+			return new DatabaseQueryCondition($this);
+		}
 
 
 		/**

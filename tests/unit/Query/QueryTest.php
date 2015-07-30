@@ -193,8 +193,9 @@
 		public function testHaving ()
 		{
 			$this->query->select()
-				->fields(array('child_id', 'child_name'))
+				->fields(array('child_id'))
 				->from('children')
+				->groupBy('child_id')
 				->having(
 					$this->connection->createCondition()->equal('child_id', 2)
 				);
@@ -202,8 +203,9 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT child_id, child_name
+					SELECT child_id
 					FROM children
+					GROUP BY child_id
 					HAVING (child_id = '2')
 				")
 			);
@@ -217,6 +219,8 @@
 			$this->query->select()
 				->fields(array('child_id', 'child_name'))
 				->from('children')
+				->groupBy('child_id')
+				->groupBy('child_name')
 				->having(
 					$this->connection->createCondition()->equal('child_id', 2)
 				)
@@ -229,6 +233,7 @@
 				$this->normalizeSql("
 					SELECT child_id, child_name
 					FROM children
+					GROUP BY child_id, child_name
 					HAVING (child_id = '2') AND (child_name = 'child2')
 				")
 			);
@@ -242,6 +247,8 @@
 			$this->query->select()
 				->fields(array('child_id', 'child_name'))
 				->from('children')
+				->groupBy('child_id')
+				->groupBy('child_name')
 				->having(
 					$this->connection->createCondition()->equal('child_id', 2)
 				)
@@ -254,6 +261,7 @@
 				$this->normalizeSql("
 					SELECT child_id, child_name
 					FROM children
+					GROUP BY child_id, child_name
 					HAVING (child_id = '2') AND NOT (child_name = 'child2')
 				")
 			);
@@ -267,6 +275,8 @@
 			$this->query->select()
 				->fields(array('child_id', 'child_name'))
 				->from('children')
+				->groupBy('child_id')
+				->groupBy('child_name')
 				->having(
 					$this->connection->createCondition()->equal('child_id', 2)
 				)
@@ -279,6 +289,7 @@
 				$this->normalizeSql("
 					SELECT child_id, child_name
 					FROM children
+					GROUP BY child_id, child_name
 					HAVING (child_id = '2') OR (child_name = 'child2')
 				")
 			);
@@ -292,6 +303,8 @@
 			$this->query->select()
 				->fields(array('child_id', 'child_name'))
 				->from('children')
+				->groupBy('child_id')
+				->groupBy('child_name')
 				->having(
 					$this->connection->createCondition()->equal('child_id', 2)
 				)
@@ -304,6 +317,7 @@
 				$this->normalizeSql("
 					SELECT child_id, child_name
 					FROM children
+					GROUP BY child_id, child_name
 					HAVING (child_id = '2') OR NOT (child_name = 'child2')
 				")
 			);
@@ -714,14 +728,14 @@
 		public function testGroupBy ()
 		{
 			$this->query->select()
-				->fields(array('child_id', 'child_name'))
+				->fields(array('parent_id'))
 				->from('children')
 				->groupBy('parent_id');
 
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT child_id, child_name
+					SELECT parent_id
 					FROM children
 					GROUP BY parent_id
 				")
@@ -734,7 +748,7 @@
 		public function testGroupByMultiple ()
 		{
 			$this->query->select()
-				->fields(array('child_id', 'child_name'))
+				->fields(array('child_id', 'parent_id'))
 				->from('children')
 				->groupBy('parent_id')
 				->groupBy('child_id');
@@ -742,7 +756,7 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT child_id, child_name
+					SELECT child_id, parent_id
 					FROM children
 					GROUP BY parent_id, child_id
 				")
@@ -920,7 +934,6 @@
 				->into('children')
 				->set(
 					array(
-						'child_id' => 156,
 						'child_name' => 'child6',
 					)
 				);
@@ -928,8 +941,8 @@
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					INSERT INTO children
-						SET child_id = '156', child_name = 'child6'
+					INSERT INTO children (child_name)
+					VALUES ('child6')
 				")
 			);
 
@@ -1052,15 +1065,17 @@
 
 		public function testHavingMappedCondition ()
 		{
-			$this->query->select()
+			$this->query->select('child_id')
 				->from('children')
+				->groupBy('child_id')
 				->havingEqual('child_id', 1);
 
 			$this->assertEquals(
 				$this->normalizeSql($this->query),
 				$this->normalizeSql("
-					SELECT *
+					SELECT child_id
 					FROM children
+					GROUP BY child_id
 					HAVING (child_id = '1')
 				")
 			);
@@ -1097,7 +1112,7 @@
 			$this->query->select()
 				->fields(array('child_id', 'child_name'))
 				->from('children')
-				->rightJoinUsing('parents', 'parent_id');
+				->rightJoinEqual('parents', 'parent.parent_id', 'children.parent_id');
 
 			$this->assertEquals($this->query->getType(), Query::QUERY_TYPE_SELECT);
 			$this->assertEquals($this->query->getTable(), 'children');
@@ -1116,11 +1131,13 @@
 			$innerQuery = $this->connection->createQuery()
 				->addField('child_name')
 				->addField('children.parent_id')
-				->leftJoinUsing('parents', 'parent_id')
+				->leftJoinEqual('parents', 'parents.parent_id', 'children.parent_id')
 				->whereEqual('child_id', 2)
 				->havingEqual('child_id', 2)
+				->groupBy('parent_id')
+				->groupBy('child_id')
 				->orderBy('parents.parent_id')
-				->limit(1, 0);
+				->limit(1);
 
 			$query->composeWith($innerQuery);
 
@@ -1129,8 +1146,9 @@
 				$this->normalizeSql("
 					SELECT child_id, child_name, children.parent_id
 					FROM children
-					LEFT JOIN parents USING (parent_id)
+					LEFT JOIN parents ON (parents.parent_id = children.parent_id)
 					WHERE (child_name = 'child1') AND ((child_id = '2'))
+					GROUP BY parent_id, child_id
 					HAVING (parent_id = '1') AND ((child_id = '2'))
 					ORDER BY child_id ASC, parents.parent_id ASC
 					LIMIT 0, 1

@@ -9,6 +9,8 @@
 	namespace LiftKit\Database\Connection;
 
 	use LiftKit\Database\Query\Identifier\MySql as Identifier;
+	use LiftKit\Database\Query\MySql as DatabaseQuery;
+	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
 
 
 	/**
@@ -18,6 +20,24 @@
 	 */
 	class MySql extends Connection
 	{
+
+
+		/**
+		 * @return DatabaseQuery
+		 */
+		public function createQuery ()
+		{
+			return new DatabaseQuery($this);
+		}
+
+
+		/**
+		 * @return DatabaseQueryCondition
+		 */
+		public function createCondition ()
+		{
+			return new DatabaseQueryCondition($this);
+		}
 
 
 		/**
