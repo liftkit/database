@@ -485,12 +485,35 @@
 		}
 
 
+		/**
+		 * @TODO
+		 *
+		 * This test has a known problem on SQL Server (maybe its a problem with dblib?).
+		 *
+		 * It appears that two identical statements seem to share the same result.
+		 *
+		 * Example:
+		 *
+		 * $result1 = self::$pdo->query("SELECT * FROM parents");
+		 * $result2 = self::$pdo->query("SELECT * FROM parents");
+		 *
+		 * $result1->fetchAll(); // Works as expected
+		 * $result2->fetchAll(); // No results
+		 *
+		 * The opposite is also true:
+		 *
+		 * $result1 = self::$pdo->query("SELECT * FROM parents");
+		 * $result2 = self::$pdo->query("SELECT * FROM parents");
+		 *
+		 * $result2->fetchAll(); // Works as expected
+		 * $result1->fetchAll(); // No results
+		 */
 		public function testGetParents ()
 		{
-			$this->assertResultEqualToResult(
-				$this->parentsTable->getChildren('friends', 1),
-				$this->parentsTable->getParents('friends', 1)
-			);
+			$children = $this->parentsTable->getChildren('friends', 1);
+			$parents = $this->parentsTable->getParents('friends', 1);
+
+			$this->assertResultEqualToResult($children, $parents);
 		}
 
 
