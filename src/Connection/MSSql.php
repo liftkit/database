@@ -52,6 +52,16 @@
 		}
 
 
+		public function quote ($value)
+		{
+			if (is_null($value)) {
+				return 'NULL';
+			} else {
+				return "'" . str_replace("'", "''", $value) . "'";
+			}
+		}
+
+
 		/**
 		 * primaryKey function.
 		 *
