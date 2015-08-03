@@ -308,13 +308,11 @@
 				$row = $this->filterColumns($row);
 			}
 
-			$this->database->createQuery()
+			return $this->database->createQuery()
 				->insert()
 				->into($this->table)
 				->set($row)
 				->execute();
-
-			return $this->database->insertId();
 		}
 
 
