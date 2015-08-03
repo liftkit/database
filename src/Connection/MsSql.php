@@ -62,6 +62,14 @@
 		}
 
 
+		public function insertId ($name = null)
+		{
+			$sql = "SELECT CAST(COALESCE(SCOPE_IDENTITY(), @@IDENTITY) AS int)";
+
+			return $this->query($sql)->fetchField();
+		}
+
+
 		/**
 		 * primaryKey function.
 		 *
