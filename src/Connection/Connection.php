@@ -100,7 +100,7 @@
 				return $this->cache->getCachedResult($query);
 			} else {
 				try {
-					$statement = $this->database->prepare((string) $query);
+					$statement = $this->database->prepare((string) $query, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 					$result = $statement->execute($data);
 					$this->lastQuery = $statement->queryString;
 

@@ -47,11 +47,18 @@
 		 */
 		protected $cursor = -1;
 
+		/**
+		 * @var int
+		 */
+		protected $count;
+
 
 		public function __construct (PDOStatement $pdoStatement, callable $castCallback = null)
 		{
 			$this->pdoStatement = $pdoStatement;
 			$this->castCallback = $castCallback;
+
+			$this->count = $this->count();
 		}
 
 
@@ -134,12 +141,21 @@
 
 		public function count()
 		{
-			$count = count($this->pdoStatement->fetchAll());
+			if (isset($this->count)) {
+				return $this->count;
+			} else {
+				$count = $this->pdoStatement->rowCount();
 
-			$this->pdoStatement->closeCursor();
-			$this->pdoStatement->execute();
+				if ($count !== false) {
+					$count = count($this->pdoStatement->fetchAll());
 
-			return $count;
+					$this->cursor = -1;
+					$this->pdoStatement->closeCursor();
+					$this->pdoStatement->execute();
+				}
+
+				return $count;
+			}
 		}
 
 
@@ -160,12 +176,16 @@
 			if ($this->hasNext()) {
 				$this->cursor++;
 				$this->current = $this->pdoStatement->fetch(PDO::FETCH_ASSOC);
-				if (empty($this->current))
+
+				if (empty($this->current)) {
 					$this->current = false;
-				else
+				} else {
 					return true;
-			}else
+				}
+			} else {
 				$this->current = false;
+			}
+
 			return false;
 		}
 
