@@ -124,8 +124,12 @@
 
 				if ($databaseResult instanceof DatabaseResult) {
 					return $databaseResult;
+
+				} else if ($query instanceof DatabaseQuery && $query->getType() == DatabaseQuery::QUERY_TYPE_INSERT) {
+					return $this->insertId($query->getTable());
+
 				} else {
-					return $this->insertId() ?: $databaseResult;
+					return $databaseResult;
 				}
 			}
 		}
@@ -213,9 +217,13 @@
 		 * @access public
 		 * @return int
 		 */
-		public function insertId ()
+		public function insertId ($name = null)
 		{
-			return $this->database->lastInsertId();
+			if ($name === null) {
+				return $this->database->lastInsertId();
+			} else {
+				return $this->database->lastInsertId($name);
+			}
 		}
 
 

@@ -30,4 +30,14 @@
 		{
 			$this->assertEquals("'test''s'", $this->connection->quote("test's"));
 		}
+
+
+		public function testInsertId ()
+		{
+			$this->connection->query("INSERT INTO parents(parent_name) VALUES('george')");
+
+			$this->assertTrue(
+				is_numeric($this->connection->insertId())
+			);
+		}
 	}

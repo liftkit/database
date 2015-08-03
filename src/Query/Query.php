@@ -507,7 +507,7 @@
 			if ($result = $cache->getCachedResult($this)) {
 				return $result;
 			} else {
-				$result = $this->database->query($this->getRaw(), array(), $this->entityHydrationRule);
+				$result = $this->database->query($this, array(), $this->entityHydrationRule);
 
 				if ($result instanceof DatabaseResult) {
 					$cache->cacheQuery($this, $result);

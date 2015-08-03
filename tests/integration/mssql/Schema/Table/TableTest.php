@@ -15,7 +15,6 @@
 	 * Class TableTest
 	 *
 	 * @package LiftKit\Tests\Integration\MsSql\Database\Schema\Table
-	 * @group current
 	 */
 	class TableTest extends BaseTableTest
 	{
