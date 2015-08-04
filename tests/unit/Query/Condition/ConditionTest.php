@@ -180,7 +180,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"FALSE"
+				"1 = 0"
 			);
 		}
 
@@ -202,7 +202,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"TRUE"
+				"1 = 1"
 			);
 		}
 
@@ -226,7 +226,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"id = '2' OR FALSE"
+				"id = '2' OR 1 = 0"
 			);
 		}
 
@@ -250,7 +250,7 @@
 
 			$this->assertEquals(
 				$this->normalizeSql($this->condition),
-				"id = '2' OR TRUE"
+				"id = '2' OR 1 = 1"
 			);
 		}
 
@@ -527,7 +527,7 @@
 				$this->normalizeSql($this->condition),
 				$this->normalizeSql(
 					"(
-						TRUE
+						1 = 1
 					)"
 				)
 			);

@@ -197,7 +197,7 @@
 			if (empty($values)) {
 				$this->conditions[] = array(
 					'relation'  => 'AND',
-					'condition' => "FALSE",
+					'condition' => "1 = 0",
 				);
 			} else {
 				if (is_array($values)) {
@@ -234,7 +234,7 @@
 			if (empty($values)) {
 				$this->conditions[] = array(
 					'relation'  => 'OR',
-					'condition' => "FALSE",
+					'condition' => "1 = 0",
 				);
 
 			} else {
@@ -272,7 +272,7 @@
 			if (empty($values)) {
 				$this->conditions[] = array(
 					'relation'  => 'AND',
-					'condition' => 'TRUE',
+					'condition' => '1 = 1',
 				);
 
 			} else {
@@ -310,7 +310,7 @@
 			if (empty($values)) {
 				$this->conditions[] = array(
 					'relation'  => 'OR',
-					'condition' => "TRUE",
+					'condition' => "1 = 1",
 				);
 			} else {
 				if (is_array($values)) {
@@ -579,7 +579,7 @@
 
 				$this->condition($condition);
 			} else {
-				$this->raw('TRUE');
+				$this->raw('1 = 1');
 			}
 		}
 
