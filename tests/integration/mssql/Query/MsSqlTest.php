@@ -134,7 +134,7 @@
 					SELECT child_id, child_name
 					FROM children
 					LEFT JOIN (
-						SELECT children.child_id AS LK_ROW_ID, ROW_NUMBER() OVER (ORDER BY child_id ASC) AS LK_ROW_NUMBER
+						SELECT children.child_id AS LK_ROW_ID, ROW_NUMBER() OVER (ORDER BY children.child_id ASC) AS LK_ROW_NUMBER
 						FROM children
 					) AS LK_ROWS ON (LK_ROWS.LK_ROW_ID = children.child_id)
 					WHERE ((LK_ROWS.LK_ROW_NUMBER >= '1')
@@ -160,7 +160,7 @@
 					SELECT child_id, child_name
 					FROM children
 					LEFT JOIN (
-						SELECT children.child_id AS LK_ROW_ID, ROW_NUMBER() OVER (ORDER BY child_id ASC) AS LK_ROW_NUMBER
+						SELECT children.child_id AS LK_ROW_ID, ROW_NUMBER() OVER (ORDER BY children.child_id ASC) AS LK_ROW_NUMBER
 						FROM children
 					) AS LK_ROWS ON (LK_ROWS.LK_ROW_ID = children.child_id)
 					WHERE ((LK_ROWS.LK_ROW_NUMBER >= '2')

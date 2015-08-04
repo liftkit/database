@@ -99,7 +99,7 @@
 		protected function createLimitQuery ()
 		{
 			if (empty($this->orderBys)) {
-				$this->orderBy($this->database->primaryKey($this->getTable()));
+				$this->orderBy($this->getTable() . '.' . $this->database->primaryKey($this->getTable()));
 			}
 
 			$tableName = $this->alias ?: $this->table;
