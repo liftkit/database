@@ -206,4 +206,18 @@
 
 			$this->query->execute();
 		}
+
+
+		public function testSearch ()
+		{
+			$this->query->select('*')
+				->from('children')
+				->whereSearch(
+					[
+						'child_name'
+					],
+					'test'
+				)
+				->execute();
+		}
 	}

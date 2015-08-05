@@ -11,7 +11,7 @@
 	use LiftKit\Database\Query\Identifier\MsSql as Identifier;
 
 	use LiftKit\Database\Query\MsSql as DatabaseQuery;
-	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
+	use LiftKit\Database\Query\Condition\MsSql as DatabaseQueryCondition;
 
 
 	/**
