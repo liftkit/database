@@ -295,7 +295,7 @@
 			} else {
 				return function ($data) use ($entity)
 				{
-					return $this->loader->getObject($entity, [$data]);
+					return $this->loader->getObject($entity, array($data));
 				};
 			}
 		}
