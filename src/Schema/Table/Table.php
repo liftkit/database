@@ -253,11 +253,11 @@
 				->from($this->table)
 				->fields(array($this->table . '.*'));
 
-			if (!is_null($inputQuery)) {
+			$query->setEntity($this->entityRule);
+
+			if (! is_null($inputQuery)) {
 				$query->composeWith($inputQuery);
 			}
-
-			$query->setEntity($this->entityRule);
 
 			return $query->execute();
 		}
