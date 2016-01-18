@@ -733,7 +733,7 @@
 
 				if ($isRelation) {
 					$table    = $relation->getRelationalTable();
-					$keyField = $relation->getKey($table);
+					$keyField = $relation->getRelationalTableObject()->getPrimaryKey();
 				} else {
 					$table    = $relation->getRelatedTable();
 					$keyField = $relation->getRelatedKey();
@@ -741,8 +741,8 @@
 
 				foreach ($children as $child) {
 					if ($filterColumns && $isRelation) {
-						$child = $relation->getRelatedTableObject()->filterColumns($child, false);
-					} else {
+						$child = $relation->getRelationalTableObject()->filterColumns($child, false);
+					} else if ($filterColumns) {
 						$child = $relation->getRelatedTableObject()->filterColumns($child);
 					}
 
@@ -776,7 +776,7 @@
 						->delete()
 						->from($relation->getRelationalTable())
 						->whereEqual($relation->getKey(), $id)
-						->whereNotIn($relation->getRelatedKey(), $childIds)
+						->whereNotIn($keyField, $childIds)
 						->execute();
 				}
 			} else {

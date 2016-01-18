@@ -37,4 +37,10 @@
 		{
 			return $this->relationalTable->getTable();
 		}
+
+
+		public function getRelationalTableObject ()
+		{
+			return $this->relationalTable;
+		}
 	}
