@@ -146,8 +146,12 @@
 			} else {
 				$count = $this->pdoStatement->rowCount();
 
-				if ($count !== false) {
-					$count = count($this->pdoStatement->fetchAll());
+				if ($count === false) {
+					$count = 0;
+
+					while ($row = $this->pdoStatement->fetch()) {
+						$count++;
+					}
 
 					$this->cursor = -1;
 					$this->pdoStatement->closeCursor();
