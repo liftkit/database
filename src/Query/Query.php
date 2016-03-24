@@ -487,6 +487,12 @@
 		}
 
 
+		public function getOrderBys ()
+		{
+			return $this->orderBys;
+		}
+
+
 		public function getTable ()
 		{
 			return $this->table;
