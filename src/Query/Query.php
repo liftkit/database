@@ -37,10 +37,10 @@
 	 * @method $this orWhereGreaterThan(mixed $compare, mixed $against)
 	 * @method $this whereGreaterThanOrEqual(mixed $compare, mixed $against)
 	 *
-	 * @method $this whereIn(mixed $needle, array $haystack)
-	 * @method $this orWhereIn(mixed $needle, array $haystack)
-	 * @method $this whereNotIn(mixed $needle, array $haystack)
-	 * @method $this orWhereNotIn(mixed $needle, array $haystack)
+	 * @method $this whereIn(mixed $needle, mixed $haystack)
+	 * @method $this orWhereIn(mixed $needle, mixed $haystack)
+	 * @method $this whereNotIn(mixed $needle, mixed $haystack)
+	 * @method $this orWhereNotIn(mixed $needle, mixed $haystack)
 	 *
 	 * @method $this whereIs(mixed $compare, mixed $against)
 	 * @method $this orWhereIs(mixed $compare, mixed $against)
@@ -82,10 +82,10 @@
 	 * @method $this orHavingGreaterThan(mixed $compare, mixed $against)
 	 * @method $this havingGreaterThanOrEqual(mixed $compare, mixed $against)
 	 *
-	 * @method $this havingIn(mixed $needle, array $haystack)
-	 * @method $this orHavingIn(mixed $needle, array $haystack)
-	 * @method $this havingNotIn(mixed $needle, array $haystack)
-	 * @method $this orHavingNotIn(mixed $needle, array $haystack)
+	 * @method $this havingIn(mixed $needle, mixed $haystack)
+	 * @method $this orHavingIn(mixed $needle, mixed $haystack)
+	 * @method $this havingNotIn(mixed $needle, mixed $haystack)
+	 * @method $this orHavingNotIn(mixed $needle, mixed $haystack)
 	 *
 	 * @method $this havingIs(mixed $compare, mixed $against)
 	 * @method $this orHavingIs(mixed $compare, mixed $against)
