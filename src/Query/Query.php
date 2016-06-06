@@ -921,7 +921,7 @@
 		}
 
 
-		public function orderBy ($field, $direction = 'ASC')
+		public function orderBy ($field, $direction = self::QUERY_ORDER_ASC)
 		{
 			$this->orderBys[] = array(
 				'field'     => $this->filterIdentifier($field),
@@ -1064,7 +1064,11 @@
 				$orderBys = array();
 
 				foreach ($this->orderBys as $orderBy) {
-					$orderBys[] = $orderBy['field'] . ' ' . $orderBy['direction'];
+					$direction = (strtoupper($orderBy['direction']) == self::QUERY_ORDER_DESC)
+						? self::QUERY_ORDER_DESC
+						: self::QUERY_ORDER_ASC;
+
+					$orderBys[] = $orderBy['field'] . ' ' . $direction;
 				}
 
 				return $sql.implode(', ', $orderBys);
