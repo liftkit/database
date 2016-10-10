@@ -17,6 +17,7 @@
 
 	use LiftKit\Database\Query\Raw\Raw;
 	use LiftKit\Database\Query\Join\Join;
+	use LiftKit\Database\Query\Union\Union;
 
 
 	/**
@@ -139,6 +140,10 @@
 		 * @var Join[]
 		 */
 		protected $joins  = array();
+
+		/**
+		 * @var Union[]
+		 */
 		protected $unions = array();
 
 		protected $whereCondition;
@@ -404,6 +409,17 @@
 			$queryLines[] = $this->processWhere();
 			$queryLines[] = $this->processGroupBy();
 			$queryLines[] = $this->processHaving();
+
+			if (count($this->unions)) {
+				$queryLines[0] = '(' . $queryLines[0];
+				$queryLines[count($queryLines) - 1] .= ')';
+
+				foreach ($this->unions as $union) {
+					$queryLines[] = $union->getType() == Union::UNION_ALL ? 'UNION ALL' : 'UNION';
+					$queryLines[] = '(' . $union->getQuery() . ')';
+				}
+			}
+
 			$queryLines[] = $this->processOrderBy();
 			$queryLines[] = $this->processLimit();
 
@@ -943,6 +959,22 @@
 		public function limit ($limit)
 		{
 			$this->limit = intval($limit);
+
+			return $this;
+		}
+
+
+		public function union ($query)
+		{
+			$this->unions[] = new Union($query, Union::UNION_DISTINCT);
+
+			return $this;
+		}
+
+
+		public function unionAll ($query)
+		{
+			$this->unions[] = new Union($query, Union::UNION_ALL);
 
 			return $this;
 		}
