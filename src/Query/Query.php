@@ -466,8 +466,8 @@
 		protected function generateUpdateQuery ()
 		{
 			$queryLines[] = "UPDATE " . $this->filterIdentifier($this->table);
-			$queryLines[] = "SET " . $this->processUpdateData();
 			$queryLines[] = $this->processJoins();
+			$queryLines[] = "SET " . $this->processUpdateData();
 			$queryLines[] = $this->processWhere();
 			$queryLines[] = $this->processGroupBy();
 			$queryLines[] = $this->processHaving();
