@@ -250,6 +250,8 @@
 			'orHavingRaw'              => 'orRaw',
 			'notHavingRaw'             => 'notRaw',
 			'orHavingNotRaw'           => 'orNotRaw',
+
+			'havingSearch'             => 'search',
 		);
 
 
