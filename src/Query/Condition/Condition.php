@@ -159,6 +159,17 @@
 		}
 
 
+		public function orLessThanOrEqual ($left, $right)
+		{
+			$this->conditions[] = array(
+				'relation'  => 'OR',
+				'condition' => $this->filterLeftValue($left) . " <= " . $this->filterValue($right),
+			);
+
+			return $this;
+		}
+
+
 		public function greaterThan ($left, $right)
 		{
 			$this->conditions[] = array(
@@ -185,6 +196,17 @@
 		{
 			$this->conditions[] = array(
 				'relation'  => 'AND',
+				'condition' => $this->filterLeftValue($left) . " >= " . $this->filterValue($right),
+			);
+
+			return $this;
+		}
+
+
+		public function orGreaterThanOrEqual ($left, $right)
+		{
+			$this->conditions[] = array(
+				'relation'  => 'OR',
 				'condition' => $this->filterLeftValue($left) . " >= " . $this->filterValue($right),
 			);
 
