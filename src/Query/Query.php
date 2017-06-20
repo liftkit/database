@@ -130,7 +130,7 @@
 		protected $database;
 
 		protected $type;
-		protected $table;
+		protected $table = true;
 		protected $alias;
 
 		protected $fields = array();
@@ -403,7 +403,7 @@
 
 			if ($this->alias) {
 				$queryLines[] = "FROM " . $this->filterIdentifier($this->table) . " AS " . $this->filterIdentifier($this->alias);
-			} else {
+			} else if ($this->table) {
 				$queryLines[] = "FROM " . $this->filterIdentifier($this->table);
 			}
 
