@@ -603,6 +603,8 @@
 			} else {
 				$this->raw('1 = 1');
 			}
+
+			return $this;
 		}
 
 
