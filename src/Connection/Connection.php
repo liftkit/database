@@ -206,7 +206,7 @@
 			if (is_null($string)) {
 				return 'NULL';
 
-			} else if (is_numeric($string)) {
+			} else if (is_int($string) || is_float($string)) {
 				return $string;
 
 			} else if ($string instanceof Raw || $string instanceof DatabaseQuery) {
