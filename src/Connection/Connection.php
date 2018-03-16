@@ -205,6 +205,8 @@
 		{
 			if (is_null($string)) {
 				return 'NULL';
+			} else if ($string instanceof Raw || $string instanceof DatabaseQuery) {
+				return (string) $string;
 			} else {
 				return $this->database->quote($string);
 			}
