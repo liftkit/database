@@ -196,7 +196,7 @@
 		 * quote function.
 		 *
 		 * @access public
-		 *riptq 
+		 *riptq
 		 * @param mixed $string
 		 *
 		 * @return string
