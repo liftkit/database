@@ -878,7 +878,7 @@
 		 *
 		 * @return array
 		 */
-		protected function filterColumns ($row, $stripPrimary = false)
+		protected function filterColumns ($row, $stripPrimary = true)
 		{
 			$columns = $this->database->getFields($this->table);
 
