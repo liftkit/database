@@ -283,14 +283,14 @@
 		 * @param PDOStatement $result
 		 * @param string|callable  $entity
 		 *
-		 * @return DatabaseResult
+		 * @return DatabaseResult|int
 		 */
 		protected function createResult (PDOStatement $result, $entity = null)
 		{
 			if ($result->columnCount()) {
 				return new DatabaseResult($result, $this->transformEntity($entity));
 			} else {
-				return true;
+				return $result->rowCount();
 			}
 		}
 
