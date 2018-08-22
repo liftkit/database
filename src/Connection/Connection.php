@@ -8,6 +8,7 @@
 
 	namespace LiftKit\Database\Connection;
 
+	use LiftKit\Database\Exception\Database;
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Database\Query\Query as DatabaseQuery;
 	use LiftKit\Database\Query\Condition\Condition as DatabaseQueryCondition;
@@ -33,6 +34,12 @@
 		 * @var DatabaseCache
 		 */
 		protected $cache;
+
+
+		/**
+		 * @var PDOStatement
+		 */
+		protected $lastStatement;
 
 
 		/**
@@ -103,6 +110,7 @@
 					$statement = $this->database->prepare((string) $query, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 					$result = $statement->execute($data);
 					$this->lastQuery = $statement->queryString;
+					$this->lastStatement = $statement;
 
 					if (! $result) {
 						throw new DatabaseException(implode(': ', $statement->errorInfo()) . PHP_EOL . PHP_EOL . $query);
@@ -131,6 +139,16 @@
 				} else {
 					return $databaseResult;
 				}
+			}
+		}
+
+
+		public function numRows ()
+		{
+			if ($this->lastStatement) {
+				return $this->lastStatement->rowCount();
+			} else {
+				throw new Database('There is no previous query to return the number of results');
 			}
 		}
 
@@ -290,7 +308,7 @@
 			if ($result->columnCount()) {
 				return new DatabaseResult($result, $this->transformEntity($entity));
 			} else {
-				return $result->rowCount();
+				return true;
 			}
 		}
 
