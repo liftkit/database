@@ -24,7 +24,7 @@
 	 */
 	class Condition
 	{
-		protected $conditions;
+		protected $conditions = array();
 		protected $database;
 
 
