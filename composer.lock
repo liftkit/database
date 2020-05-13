@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0df32dad8c9b51f724b18a8b8a94001d",
+    "content-hash": "f7b10a50f2a5474c3874f07db89fa763",
     "packages": [
         {
             "name": "liftkit/collection",
@@ -1278,6 +1278,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-pdo": "^7.3",
+        "ext-json": "^1.7"
+    },
     "platform-dev": []
 }
