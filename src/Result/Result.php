@@ -17,6 +17,7 @@
 
 	use Countable;
 	use Iterator;
+	use JsonSerializable;
 
 
 	/**
@@ -24,7 +25,7 @@
 	 *
 	 * @package LiftKit\Database\Result
 	 */
-	class Result implements Countable, Iterator
+	class Result implements Countable, Iterator, JsonSerializable
 	{
 		/**
 		 *
@@ -222,6 +223,12 @@
 			$this->castCallback = $callback;
 
 			return $this;
+		}
+
+
+		public function jsonSerialize ()
+		{
+			return $this->flatten();
 		}
 
 
