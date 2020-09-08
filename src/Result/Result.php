@@ -109,10 +109,14 @@
 		{
 			$row = $this->pdoStatement->fetch(PDO::FETCH_ASSOC);
 
-			if (is_null($field)) {
-				return array_shift($row);
+			if ($row) {
+				if (is_null($field)) {
+					return array_shift($row);
+				} else {
+					return $row[$field];
+				}
 			} else {
-				return $row[$field];
+				return null;
 			}
 		}
 

@@ -52,7 +52,11 @@
 
 		public function getCachedResult (DatabaseQuery $query)
 		{
-			$result = $this->cachedQueries[$query->getRaw()]['result'];
+			if (isset($this->cachedQueries[$query->getRaw()])) {
+				$result = $this->cachedQueries[$query->getRaw()]['result'];
+			} else {
+				$result = null;
+			}
 
 			if ($query->getType() == DatabaseQuery::QUERY_TYPE_SELECT && $query->isCached() && $result) {
 				$result->rewind();
@@ -66,7 +70,7 @@
 
 		public function isCached ($query)
 		{
-			if ($query instanceof DatabaseQuery) {
+			if ($query instanceof DatabaseQuery && isset($this->cachedQueries[$query->getRaw()])) {
 				return $this->cachedQueries[$query->getRaw()]['result']
 					&& $query->getType() == DatabaseQuery::QUERY_TYPE_SELECT
 					&& $query->isCached();
