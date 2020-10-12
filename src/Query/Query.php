@@ -427,7 +427,7 @@
 
 			$queryLines = array_filter($queryLines);
 
-			return implode($queryLines, PHP_EOL);
+			return implode(PHP_EOL, $queryLines);
 		}
 
 
@@ -438,7 +438,7 @@
 
 			$queryLines = array_filter($queryLines);
 
-			return implode($queryLines, PHP_EOL);
+			return implode(PHP_EOL, $queryLines);
 		}
 
 
@@ -449,7 +449,7 @@
 
 			$queryLines = array_filter($queryLines);
 
-			return implode($queryLines, PHP_EOL);
+			return implode(PHP_EOL, $queryLines);
 		}
 
 
@@ -461,7 +461,7 @@
 
 			$queryLines = array_filter($queryLines);
 
-			return implode($queryLines, PHP_EOL);
+			return implode(PHP_EOL, $queryLines);
 		}
 
 
@@ -478,7 +478,7 @@
 
 			$queryLines = array_filter($queryLines);
 
-			return implode($queryLines, PHP_EOL);
+			return implode(PHP_EOL, $queryLines);
 		}
 
 
@@ -495,7 +495,7 @@
 
 			$queryLines = array_filter($queryLines);
 
-			return implode($queryLines, PHP_EOL);
+			return implode(PHP_EOL, $queryLines);
 		}
 
 
