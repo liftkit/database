@@ -617,6 +617,8 @@
 		public function clearFields ()
 		{
 			$this->fields = array();
+
+			return $this;
 		}
 
 
