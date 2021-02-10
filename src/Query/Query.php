@@ -614,6 +614,12 @@
 		}
 
 
+		public function clearFields ()
+		{
+			$this->fields = array();
+		}
+
+
 		public function insert ()
 		{
 			$this->type = self::QUERY_TYPE_INSERT;
