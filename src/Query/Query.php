@@ -990,6 +990,16 @@
 		}
 
 
+		// CLONE FIX
+		
+
+		public function __clone ()
+		{
+			$this->whereCondition = clone $this->whereCondition;
+			$this->havingCondition = clone $this->havingCondition;
+		}
+
+
 		// PROTECTED METHODS
 
 
