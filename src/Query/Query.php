@@ -990,6 +990,15 @@
 		}
 
 
+		public function withoutOrderbys ()
+		{
+			$clone = clone $this;
+			$clone->orderBys = [];
+
+			return $clone;
+		}
+
+
 		// CLONE FIX
 		
 
