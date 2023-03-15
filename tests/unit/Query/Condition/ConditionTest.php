@@ -501,17 +501,17 @@
 				$this->normalizeSql(
 					"(
 						(
-							field1 REGEXP '[[:<:]]three'
-							OR field2 REGEXP '[[:<:]]three'
-							OR field3 REGEXP '[[:<:]]three'
+							field1 REGEXP '\\bthree'
+							OR field2 REGEXP '\\bthree'
+							OR field3 REGEXP '\\bthree'
 						) AND (
-							field1 REGEXP '[[:<:]]different'
-							OR field2 REGEXP '[[:<:]]different'
-							OR field3 REGEXP '[[:<:]]different'
+							field1 REGEXP '\\bdifferent'
+							OR field2 REGEXP '\\bdifferent'
+							OR field3 REGEXP '\\bdifferent'
 						) AND (
-							field1 REGEXP '[[:<:]]terms'
-							OR field2 REGEXP '[[:<:]]terms'
-							OR field3 REGEXP '[[:<:]]terms'
+							field1 REGEXP '\\bterms'
+							OR field2 REGEXP '\\bterms'
+							OR field3 REGEXP '\\bterms'
 						)
 					)"
 				)

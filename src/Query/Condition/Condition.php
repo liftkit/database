@@ -592,7 +592,7 @@
 					foreach ($fields as $field) {
 						$innerCondition->orRegexp(
 							$field,
-							'[[:<:]]' . preg_quote($term)
+							'\\b' . preg_quote($term)
 						);
 					}
 
