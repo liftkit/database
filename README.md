@@ -2,7 +2,9 @@
 
 ## Installation
 
-Using composer require: `"liftkit/database": "~2.6"`
+```
+composer require liftkit/database
+```
 
 Let's jump right in to some examples.
 
