@@ -15,6 +15,7 @@
 	use LiftKit\Database\Query\Raw\Raw;
 	use LiftKit\Database\Query\Identifier\Identifier;
 	use LiftKit\Database\Query\Exception\Query as DatabaseQueryBuilderException;
+	use LiftKit\Database\Exception\Database as DatabaseException;
 
 
 	/**
@@ -580,6 +581,7 @@
 
 		public function search ($fields, $termString)
 		{
+			$boundary = $this->getWordBoundary();
 			$condition = new self($this->database);
 
 			$terms = preg_split('#(\s+)#', $termString);
@@ -592,7 +594,7 @@
 					foreach ($fields as $field) {
 						$innerCondition->orRegexp(
 							$field,
-							'\\b' . preg_quote($term)
+							$boundary . preg_quote($term)
 						);
 					}
 
@@ -671,6 +673,27 @@
 			} else {
 				return false;
 			}
+		}
+
+
+		private function getWordBoundary ()
+		{
+			static $useAlternateWordBoundary;
+
+			if (! isset($useAlternateWordBoundary)) {
+				$sql = "
+					SELECT 'word1' 
+					REGEXP '[[:<:]]word1'
+				";
+
+				try {
+					$useAlternateWordBoundary = (bool) $this->database->query($sql)->fetchField();
+				} catch (DatabaseException $e) {
+					$useAlternateWordBoundary = false;
+				}
+			}
+
+			return $useAlternateWordBoundary ? '[[:<:]]' : '\\b';
 		}
 	}
 
