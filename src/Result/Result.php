@@ -144,6 +144,7 @@
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function count()
 		{
 			if (isset($this->count)) {
@@ -168,18 +169,21 @@
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function current()
 		{
 			return $this->current ? $this->cast($this->current) : false;
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function key()
 		{
 			return $this->cursor;
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function next()
 		{
 			if ($this->hasNext()) {
@@ -199,6 +203,7 @@
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function rewind()
 		{
 			if ($this->cursor != -1) {
@@ -210,6 +215,7 @@
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function valid()
 		{
 			return ($this->current != false) || (($this->cursor == -1) && ($this->count() > 0));
@@ -230,6 +236,7 @@
 		}
 
 
+		#[\ReturnTypeWillChange]
 		public function jsonSerialize ()
 		{
 			return $this->flatten();
