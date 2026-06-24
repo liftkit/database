@@ -54,7 +54,7 @@
 		protected $count;
 
 
-		public function __construct (PDOStatement $pdoStatement, callable $castCallback = null)
+		public function __construct (PDOStatement $pdoStatement, ?callable $castCallback = null)
 		{
 			$this->pdoStatement = $pdoStatement;
 			$this->castCallback = $castCallback;
@@ -228,7 +228,7 @@
 		}
 
 
-		public function setCastCallback (callable $callback = null)
+		public function setCastCallback (?callable $callback = null)
 		{
 			$this->castCallback = $callback;
 

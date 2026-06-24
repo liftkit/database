@@ -42,7 +42,7 @@
 		/**
 		 * @param Connection $database
 		 */
-		public function __construct (Connection $database, Schema $schema = null)
+		public function __construct (Connection $database, ?Schema $schema = null)
 		{
 			$this->database = $database;
 			$this->schema = $schema;
