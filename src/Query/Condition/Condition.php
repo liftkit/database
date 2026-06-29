@@ -37,7 +37,7 @@
 
 		public function isEmpty ()
 		{
-			return (boolean)!count($this->conditions);
+			return (bool)!count($this->conditions);
 		}
 
 
