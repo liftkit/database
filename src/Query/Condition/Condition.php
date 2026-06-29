@@ -584,7 +584,7 @@
 			$boundary = $this->getWordBoundary();
 			$condition = new self($this->database);
 
-			$terms = preg_split('#(\s+)#', $termString);
+			$terms = preg_split('#(\s+)#', (string) $termString);
 			$terms = array_filter($terms);
 
 			if (!empty($fields) && !empty($terms)) {

@@ -314,7 +314,7 @@
 
 		public function setPrependFields ($bool)
 		{
-			$this->prependFields = (boolean) $bool;
+			$this->prependFields = (bool) $bool;
 
 			return $this;
 		}
